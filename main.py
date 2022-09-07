@@ -205,6 +205,9 @@ fading = False
 show_beans=False
 
 
+
+SCORE = 0
+
 while not done:
 
 
@@ -278,6 +281,8 @@ while not done:
 		customer_status = 2
 		show_beans = True
 		my_order = [0,0,0,0]
+		SCORE +=1
+		print('score is '+str(SCORE))
 
 
 
