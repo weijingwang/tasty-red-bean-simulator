@@ -50,7 +50,6 @@ class ParticlePrinciple:
 		self.particles = particle_copy
 
 
-
 class KitchenThings(pygame.sprite.Sprite):
 	def __init__(self,image_link,coords, display,kind,width,height):
 		super().__init__()
@@ -71,22 +70,15 @@ class KitchenThings(pygame.sprite.Sprite):
 
 		self.status = 0
 
+
 	def Draw(self,active,mouse_pos):
 		
 		if active==True and self.rect.collidepoint(mouse_pos):
 			self.display.blit(self.image_big,self.rect)
 			if self.can_activate==True:
-				# if self.rect.colliderect(pygame.Rect(200,200,350,550))==False:
-				# 	print
-				# 	self.rect.move_ip((350-self.rect.center[0])/4, (550-self.rect.center[1])/4)
-				# else:
 				self.can_activate = False
-
-				# print(self.kind)
-				# print(self.rect.center)
 				return self.kind
-
-				
+	
 		else:
 			self.can_activate=True
 			self.display.blit(self.image,self.rect)
@@ -115,11 +107,21 @@ class Customer(pygame.sprite.Sprite):
 		# print(self.rect.bottom)
 
 
-	def Move(self):#0: incoming, 1: wait, 2: leaving
-		self.accel=1
-		if self.bottomleft_comp[0]>570:
-			self.bottomleft_comp[0] -=self.velocity
-			self.velocity-=self.accel
+	def Move(self,status):#0: incoming, 1: wait, 2: leaving
+		print(status)
+		if status == 0:
+			self.accel=1
+			if self.bottomleft_comp[0]>570:
+				self.bottomleft_comp[0] -=self.velocity
+				self.velocity-=self.accel
+				return 0
+			if self.rect.left == 566:
+				print(self.bottomleft_comp[0])
+				return 1
+
+		
+
+
 		if self.go_up ==True and self.bottomleft_comp[1] > 690:
 			self.bottomleft_comp[1] -=0.5
 		if self.bottomleft_comp[1] == 690:
@@ -129,12 +131,23 @@ class Customer(pygame.sprite.Sprite):
 		if self.bottomleft_comp[1]==730:
 			self.go_up=True
 
+		if status==1:
+			return 1
+			print('wait')
+
+		if status ==2:
+			if self.bottomleft_comp[0]>-400:
+				self.bottomleft_comp[0]-=20
+				return 'pooo'
+			if self.bottomleft_comp[0]<=-400:
+				print('gfhjgh')
+				self.rect.bottomleft = 1280,720
+				self.bottomleft_comp = [1280,720]
+				return 0
+		print(self.rect)
 
 
-		if self.rect.left == 570:
-			return True
-
-
+		
 
 		# if self.rect.bottom< 521:
 		# 	self.rect.move_ip(0,-1)
@@ -155,6 +168,7 @@ Heat = KitchenThings("./assets/heat.png",(1170,600),screen,'heat',213,114)
 
 CustomerTest = Customer('./assets/customer.png',screen)
 
+
 my_order = [0,0,0,0]
 customer_order = [2,3,5,1]
 #beans,sugar,water,heat
@@ -167,6 +181,9 @@ side_bar_color = 'black'
 particle1 = ParticlePrinciple()
 PARTICLE_EVENT = pygame.USEREVENT + 1
 pygame.time.set_timer(PARTICLE_EVENT,40)
+
+
+customer_status = 0
 
 while not done:
 	for event in pygame.event.get():
@@ -199,7 +216,8 @@ while not done:
 
 
 	CustomerTest.Render()
-	CustomerTest.Move()
+	customer_status_output = CustomerTest.Move(customer_status)
+	customer_status = customer_status_output
 	CustomerTest.Update()
 	pygame.draw.rect(screen, (170,135,54), pygame.Rect(320, 570, 960, 150))
 
@@ -208,6 +226,8 @@ while not done:
 	sugar_counter = Sugar.Draw(mouse_press,mouse_pos)
 	water_counter = Water.Draw(mouse_press,mouse_pos)
 	heat_counter = Heat.Draw(mouse_press,mouse_pos)
+
+	# print(customer_status_output)
 
 
 
@@ -225,9 +245,15 @@ while not done:
 
 	if my_order == customer_order:
 		order_correct=True
+		customer_status = 2
+		my_order = [0,0,0,0]
+
 	if sum(my_order) > sum(customer_order):
+		customer_status = 2
 		order_correct=False
+		my_order = [0,0,0,0]
 		print('reset order')
+
 	# print(my_order)
 
 	particle1.emit()
