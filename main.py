@@ -31,14 +31,10 @@ class Pot(pygame.sprite.Sprite):
 
 	def Render(self,coords):
 
-		# if self.rect.collidepoint(coords) ==True:
-		# 	print('poo')
-
-		
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				quit()
-			if event.type == pygame.MOUSEBUTTONDOWN:
+			if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(coords) ==True:
 				self.click_activate_count +=1
 
 				if self.click_activate_count ==2:
@@ -50,9 +46,11 @@ class Pot(pygame.sprite.Sprite):
 				self.move_object = True
 
 		if self.move_object == True:
-			self.rect = (coords[0]-100,coords[1]-100)
+			self.rect.x = coords[0]-100
+			self.rect.y = coords[1]-100
 		else:
-			self.rect = (self.coord_store[0]-100,self.coord_store[1]-100)
+			self.rect.x = self.coord_store[0]-100
+			self.rect.y = self.coord_store[1]-100
 
 		self.display.blit(self.image,self.rect)
 
