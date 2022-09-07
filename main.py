@@ -111,7 +111,7 @@ class Customer(pygame.sprite.Sprite):
 		# print(self.rect.bottom)
 
 
-	def Move(self,status):#0: incoming, 1: wait, 2: leaving
+	def Move(self,status,order_correct):#0: incoming, 1: wait, 2: leaving
 		# print(status)
 		if status == 0:
 			self.image = self.images[0]
@@ -144,7 +144,10 @@ class Customer(pygame.sprite.Sprite):
 
 
 		if status ==2:
-			self.image = self.images[2]
+			if order_correct==True:
+				self.image = self.images[1]
+			else:
+				self.image = self.images[2]
 			if self.bottomleft_comp[0]>-400:
 				self.bottomleft_comp[0]-=self.velocity
 				return 2
@@ -179,7 +182,7 @@ CustomerTest = Customer(screen)
 
 
 my_order = [0,0,0,0]
-customer_order = [1,1,1,0]
+customer_order = [2,1,1,0]
 #beans,sugar,water,heat
 
 order_correct = False
@@ -242,7 +245,7 @@ while not done:
 
 
 	CustomerTest.Render()
-	customer_status_output = CustomerTest.Move(customer_status)
+	customer_status_output = CustomerTest.Move(customer_status,order_correct)
 	customer_status = customer_status_output
 	CustomerTest.Update()
 
