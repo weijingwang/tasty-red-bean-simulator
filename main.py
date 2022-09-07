@@ -126,7 +126,7 @@ class Customer(pygame.sprite.Sprite):
 				# self.velocity-=self.accel
 				return 0
 			if self.rect.left == 530:
-				print(self.bottomleft_comp[0])
+				# print(self.bottomleft_comp[0])
 				return 1
 
 		
@@ -143,7 +143,7 @@ class Customer(pygame.sprite.Sprite):
 
 		if status==1:
 			return 1
-			print('wait')
+			# print('wait')
 
 
 
@@ -157,11 +157,11 @@ class Customer(pygame.sprite.Sprite):
 				self.bottomleft_comp[0]-=self.velocity
 				return 2
 			if self.bottomleft_comp[0]<=-400:
-				print('gfhjgh')
+				# print('gfhjgh')
 				self.rect.bottomleft = 1280,720
 				self.bottomleft_comp = [1280,720]
 				return 0
-		print(self.rect)
+		# print(self.rect)
 
 
 		
@@ -187,7 +187,12 @@ CustomerTest = Customer(screen)
 
 
 my_order = [0,0,0,0]
-customer_order = [2,1,1,0]
+customer_order = [
+	random.randint(0, 3),
+	random.randint(0, 3),
+	random.randint(0, 3),
+	random.randint(0, 3)
+]
 #beans,sugar,water,heat
 
 order_correct = False
@@ -224,7 +229,7 @@ OK_SOUND = pygame.mixer.Sound("./assets/music/sound/CLICK.ogg")
 
 while not done:
 
-
+	print(customer_order)
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			quit()
@@ -298,6 +303,12 @@ while not done:
 		my_order = [0,0,0,0]
 		SCORE +=1
 		print('score is '+str(SCORE))
+		customer_order = [
+			random.randint(0, 3),
+			random.randint(0, 3),
+			random.randint(0, 3),
+			random.randint(0, 3)
+		]
 
 
 
@@ -306,23 +317,23 @@ while not done:
 		customer_status = 2
 		order_correct=False
 		my_order = [0,0,0,0]
-		print('reset order')
+		# print('reset order')
 
 	if show_beans==True and fading==False:
 		fading=False
-		print('coming')
+		# print('coming')
 		if alph <= 500:
 			alph+=40
 		if alph >=500:
 			fading = True
-			print('false')
+			# print('false')
 			show_beans=False
 	if fading==True:
-		print('fading')
+		# print('fading')
 		alph-=40
 		if alph<=0:
 			fading =False
-	print(alph)
+	# print(alph)
 
 	# print(my_order)
 
