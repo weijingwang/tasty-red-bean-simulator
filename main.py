@@ -86,12 +86,16 @@ class KitchenThings(pygame.sprite.Sprite):
 
 class Customer(pygame.sprite.Sprite):
 	"""docstring for ClassName"""
-	def __init__(self, image_link, display):
+	def __init__(self, display):
 		super().__init__()
-		self.image_link = image_link
 		self.display = display
-		self.image = pygame.image.load(self.image_link).convert_alpha()
-		# self.image = pygame.transform.scale(self.image,(500,500))
+
+		self.images = []
+		self.images.append(pygame.image.load('./assets/customer.png').convert_alpha())
+		self.images.append(pygame.image.load('./assets/customer_happy.png').convert_alpha())
+		self.images.append(pygame.image.load('./assets/customer_angry.png').convert_alpha())
+
+		self.image = self.images[0]
 		self.rect = self.image.get_rect()
 		self.rect.bottomleft = 1280,720
 		self.go_up = True
@@ -110,6 +114,7 @@ class Customer(pygame.sprite.Sprite):
 	def Move(self,status):#0: incoming, 1: wait, 2: leaving
 		print(status)
 		if status == 0:
+			self.image = self.images[0]
 			# self.accel=1
 			if self.bottomleft_comp[0]>570:
 				self.bottomleft_comp[0] -=self.velocity
@@ -139,6 +144,7 @@ class Customer(pygame.sprite.Sprite):
 
 
 		if status ==2:
+			self.image = self.images[2]
 			if self.bottomleft_comp[0]>-400:
 				self.bottomleft_comp[0]-=self.velocity
 				return 2
@@ -169,7 +175,7 @@ Sugar = KitchenThings("./assets/sugar.png",(150,400),screen,'sugar',200,200)
 Water = KitchenThings("./assets/water.png",(820,590),screen,'water',325,195)
 Heat = KitchenThings("./assets/heat.png",(1170,600),screen,'heat',213,114)
 
-CustomerTest = Customer('./assets/customer.png',screen)
+CustomerTest = Customer(screen)
 
 
 my_order = [0,0,0,0]
@@ -188,7 +194,20 @@ pygame.time.set_timer(PARTICLE_EVENT,40)
 
 customer_status = 0
 
+
+
+#FADERS=======
+
+finished_dish1 = pygame.image.load("./assets/Red_Bean_Soup.png").convert_alpha()
+finished_dish1.set_alpha(0)
+alph = 0
+fading = True
+
+
+
 while not done:
+
+
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			quit()
@@ -215,25 +234,36 @@ while not done:
 
 	screen.blit(bg,(320,0))
 	pygame.draw.rect(screen, side_bar_color, pygame.Rect(0, 0, 320, 720))
-
+	bean_counter = RedBeans.Draw(mouse_press,mouse_pos)
+	sugar_counter = Sugar.Draw(mouse_press,mouse_pos)
 
 
 	CustomerTest.Render()
 	customer_status_output = CustomerTest.Move(customer_status)
 	customer_status = customer_status_output
 	CustomerTest.Update()
-	pygame.draw.rect(screen, (170,135,54), pygame.Rect(320, 570, 960, 150))
 
-	screen.blit(pot,(300,500))
-	bean_counter = RedBeans.Draw(mouse_press,mouse_pos)
-	sugar_counter = Sugar.Draw(mouse_press,mouse_pos)
+
+	pygame.draw.rect(screen, (170,135,54), pygame.Rect(0, 570, 1280, 150))
+
 	water_counter = Water.Draw(mouse_press,mouse_pos)
 	heat_counter = Heat.Draw(mouse_press,mouse_pos)
+	screen.blit(pot,(300,500))
+
+
+	finished_dish1.set_alpha(alph)
+	screen.blit(finished_dish1,(0,0))
+
 
 	# print(customer_status_output)
 
 
+	if alph >= 500:
+		alph-=20
+	else:
+		alph+=20
 
+	print(alph)
 
 	if bean_counter =='beans':
 		my_order[0]+=1
@@ -250,6 +280,7 @@ while not done:
 		order_correct=True
 		customer_status = 2
 		my_order = [0,0,0,0]
+
 
 	if sum(my_order) > sum(customer_order):
 		customer_status = 2
