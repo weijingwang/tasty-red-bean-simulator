@@ -180,8 +180,8 @@ class Customer(pygame.sprite.Sprite):
 
 RedBeans = KitchenThings("./assets/red_beans.png",(150,150),screen,'beans',200,200)
 Sugar = KitchenThings("./assets/sugar.png",(150,400),screen,'sugar',200,200)
-Water = KitchenThings("./assets/water.png",(820,590),screen,'water',325,195)
-Heat = KitchenThings("./assets/heat.png",(1170,600),screen,'heat',213,114)
+Water = KitchenThings("./assets/water.png",(800,590),screen,'water',325,195)
+Heat = KitchenThings("./assets/heat.png",(1150,650),screen,'heat',213,114)
 
 CustomerTest = Customer(screen)
 
