@@ -4,15 +4,13 @@ pygame.init()
 # pygame.mouse.set_visible(False)
 
 screen = pygame.display.set_mode((1280, 720))
-draft = pygame.image.load("./assets/draft.png").convert_alpha()
 
+bg = pygame.image.load("./assets/bg.png").convert_alpha()
 pot = pygame.image.load("./assets/pot.png").convert_alpha()
 pot = pygame.transform.scale(pot,(200,200))
 pot_rect = pot.get_rect()
 
-customer = pygame.image.load("./assets/customer_test.png").convert_alpha()
-customer = pygame.transform.scale(customer,(500,500))
-customer_rect = customer.get_rect()
+
 
 done = False
 
@@ -37,7 +35,6 @@ class KitchenThings(pygame.sprite.Sprite):
 
 		self.can_activate = True
 
-
 	def Draw(self,active,mouse_pos):
 		
 		if active==True and self.rect.collidepoint(mouse_pos):
@@ -59,6 +56,47 @@ class KitchenThings(pygame.sprite.Sprite):
 			self.display.blit(self.image,self.rect)
 
 
+class Customer(pygame.sprite.Sprite):
+	"""docstring for ClassName"""
+	def __init__(self, image_link, display):
+		super().__init__()
+		self.image_link = image_link
+		self.display = display
+		self.image = pygame.image.load(self.image_link).convert_alpha()
+		self.image = pygame.transform.scale(self.image,(500,500))
+		self.rect = self.image.get_rect()
+		self.rect.bottomleft = 1280,520
+		self.go_up = True
+		self.bottomleft_comp = [1280,520]
+	def Render(self):
+		self.display.blit(self.image,self.rect)
+	def Update(self):
+		print(self.rect.bottom)
+		if self.bottomleft_comp[0]>570:
+			self.bottomleft_comp[0] -=2
+
+		if self.go_up ==True and self.bottomleft_comp[1] > 500:
+			print('asdf')
+			self.bottomleft_comp[1] -=0.5
+		if self.bottomleft_comp[1] == 500:
+			self.go_up=False
+		if self.bottomleft_comp[1] < 520 and self.go_up == False:
+			self.bottomleft_comp[1] +=0.5
+		if self.bottomleft_comp[1]==520:
+			self.go_up=True
+
+		print(self.bottomleft_comp)
+		self.rect.bottomleft = self.bottomleft_comp
+
+		# if self.rect.bottom< 521:
+		# 	self.rect.move_ip(0,-1)
+		# elif self.rect.bottom510:
+		# 	self.rect.move_ip(0,1)
+
+	def CheckOrder(self):
+		pass
+
+
 
 
 
@@ -67,8 +105,9 @@ Sugar = KitchenThings("./assets/sugar.png",(150,400),screen,'sugar',200,200)
 Water = KitchenThings("./assets/water.png",(820,590),screen,'water',325,195)
 Heat = KitchenThings("./assets/heat.png",(1170,600),screen,'heat',213,114)
 
+CustomerTest = Customer('./assets/customer_test.png',screen)
 
-order = [0,0,0,0]
+my_order = [0,0,0,0]
 #beans,sugar,water,heat
 
 while not done:
@@ -81,7 +120,9 @@ while not done:
 
 
 
-	screen.blit(draft,(0,0))
+	screen.blit(bg,(0,0))
+	CustomerTest.Render()
+	CustomerTest.Update()
 	screen.blit(pot,(300,500))
 	bean_counter = RedBeans.Draw(mouse_press,mouse_pos)
 	sugar_counter = Sugar.Draw(mouse_press,mouse_pos)
@@ -89,16 +130,15 @@ while not done:
 	heat_counter = Heat.Draw(mouse_press,mouse_pos)
 
 	if bean_counter =='beans':
-		order[0]+=1
+		my_order[0]+=1
 	elif sugar_counter =='sugar':
-		order[1]+=1
+		my_order[1]+=1
 	elif water_counter =='water':
-		order[2]+=1
+		my_order[2]+=1
 	elif heat_counter =='heat':
-		order[3]+=1
+		my_order[3]+=1
 
-	print(order)
-	screen.blit(customer,(570,20))
+	# print(my_order)
 
 
 
