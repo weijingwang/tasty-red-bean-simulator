@@ -70,12 +70,17 @@ class KitchenThings(pygame.sprite.Sprite):
 
 		self.status = 0
 
+		self.sfx =pygame.mixer.Sound("./assets/music/sound/CLICK_SMALL.ogg")
+
+
 
 	def Draw(self,active,mouse_pos):
 		
 		if active==True and self.rect.collidepoint(mouse_pos):
 			self.display.blit(self.image_big,self.rect)
+
 			if self.can_activate==True:
+				pygame.mixer.Sound.play(self.sfx)
 				self.can_activate = False
 				return self.kind
 	
@@ -215,7 +220,7 @@ SCORE = 0
 
 #SOUND++++++++++++++++
 ANGER = pygame.mixer.Sound("./assets/music/sound/ANGER.ogg")
-COIN = pygame.mixer.Sound("./assets/music/sound/COIN.ogg")
+OK_SOUND = pygame.mixer.Sound("./assets/music/sound/CLICK.ogg")
 
 while not done:
 
@@ -286,7 +291,7 @@ while not done:
 
 
 	if my_order == customer_order:
-		pygame.mixer.Sound.play(COIN)
+		pygame.mixer.Sound.play(OK_SOUND)
 		order_correct=True
 		customer_status = 2
 		show_beans = True
