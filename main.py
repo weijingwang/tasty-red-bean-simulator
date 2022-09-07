@@ -211,6 +211,12 @@ show_beans=False
 
 SCORE = 0
 
+
+
+#SOUND++++++++++++++++
+ANGER = pygame.mixer.Sound("./assets/music/sound/ANGER.ogg")
+COIN = pygame.mixer.Sound("./assets/music/sound/COIN.ogg")
+
 while not done:
 
 
@@ -280,6 +286,7 @@ while not done:
 
 
 	if my_order == customer_order:
+		pygame.mixer.Sound.play(COIN)
 		order_correct=True
 		customer_status = 2
 		show_beans = True
@@ -290,6 +297,7 @@ while not done:
 
 
 	if sum(my_order) > sum(customer_order):
+		pygame.mixer.Sound.play(ANGER)
 		customer_status = 2
 		order_correct=False
 		my_order = [0,0,0,0]
