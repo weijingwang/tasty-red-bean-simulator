@@ -7,20 +7,7 @@ screen = pygame.display.set_mode((1280, 720))
 draft = pygame.image.load("./assets/draft.png").convert_alpha()
 
 
-class Pot(pygame.sprite.Sprite):
-	"""docstring for ClassName"""
-	def __init__(self, image_link, coords, display):
-		super().__init__()
-		self.image_link = image_link
-		self.image = pygame.image.load(self.image_link).convert_alpha()
-		self.rect = self.image.get_rect()
-		self.display = display
-		self.coords = coords
-	def Render(self):
-		self.display.blit(pygame.transform.scale(self.image,(200,200)),(self.coords[0],self.coords[1]))
-
-class Ingredients(pygame.sprite.Sprite):
-	"""subclass of ingredients?"""
+class KitchenThings(pygame.sprite.Sprite):
 	def __init__(self,image_link,coord_store, display):
 		super().__init__()
 		self.image_link=image_link
@@ -43,28 +30,7 @@ class Ingredients(pygame.sprite.Sprite):
 			self.click_activate_count=False
 			self.rect.x = self.coord_store[0]-100
 			self.rect.y = self.coord_store[1]-100
-		# if pygame.mouse.get_pressed()[0] ==True and self.rect.collidepoint(coords) ==True:
-		# 	self.click_activate_count +=1
-
-		# 	if self.click_activate_count ==2:
-		# 		self.click_activate_count=0
-		# 		self.coord_store = coords
-		# 		self.move_object = False
-
-		# elif pygame.mouse.get_pressed()[0] ==False and self.click_activate_count==1:
-		# 	self.move_object = True
-
-		# if self.move_object == True:
-		# 	self.rect.x = coords[0]-100
-		# 	self.rect.y = coords[1]-100
-		# else:
-		# 	self.rect.x = self.coord_store[0]-100
-		# 	self.rect.y = self.coord_store[1]-100
-
 		self.display.blit(self.image,self.rect)
-
-
-
 
 class Customer(pygame.sprite.Sprite):
 	"""docstring for ClassName"""
@@ -84,9 +50,9 @@ class Customer(pygame.sprite.Sprite):
 
 done = False
 
-MyPot = Ingredients('./assets/pot.png',(400,630),screen)
-RedBeans=Ingredients('./assets/red_beans.png',(150,150),screen)
-Sugar=Ingredients('./assets/sugar.png',(150,400),screen)
+MyPot = KitchenThings('./assets/pot.png',(400,630),screen)
+RedBeans=KitchenThings('./assets/red_beans.png',(150,150),screen)
+Sugar=KitchenThings('./assets/sugar.png',(150,400),screen)
 
 Customers = Customer(screen)
 
