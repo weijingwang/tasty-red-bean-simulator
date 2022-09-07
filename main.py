@@ -112,7 +112,7 @@ class Customer(pygame.sprite.Sprite):
 
 
 	def Move(self,status):#0: incoming, 1: wait, 2: leaving
-		print(status)
+		# print(status)
 		if status == 0:
 			self.image = self.images[0]
 			# self.accel=1
@@ -179,7 +179,7 @@ CustomerTest = Customer(screen)
 
 
 my_order = [0,0,0,0]
-customer_order = [2,3,5,1]
+customer_order = [1,1,1,0]
 #beans,sugar,water,heat
 
 order_correct = False
@@ -201,8 +201,8 @@ customer_status = 0
 finished_dish1 = pygame.image.load("./assets/Red_Bean_Soup.png").convert_alpha()
 finished_dish1.set_alpha(0)
 alph = 0
-fading = True
-
+fading = False
+show_beans=False
 
 
 while not done:
@@ -258,12 +258,9 @@ while not done:
 	# print(customer_status_output)
 
 
-	if alph >= 500:
-		alph-=20
-	else:
-		alph+=20
 
-	print(alph)
+
+	# print(show_beans)
 
 	if bean_counter =='beans':
 		my_order[0]+=1
@@ -279,7 +276,9 @@ while not done:
 	if my_order == customer_order:
 		order_correct=True
 		customer_status = 2
+		show_beans = True
 		my_order = [0,0,0,0]
+
 
 
 	if sum(my_order) > sum(customer_order):
@@ -287,6 +286,20 @@ while not done:
 		order_correct=False
 		my_order = [0,0,0,0]
 		print('reset order')
+
+	if show_beans==True and fading==False:
+		fading=False
+		if alph <= 500:
+			alph+=40
+		if alph >=500:
+			fading = True
+			print('false')
+			show_beans=False
+	if fading==True:
+		alph-=40
+		if alph<=0:
+			fading ==False
+
 
 	# print(my_order)
 
