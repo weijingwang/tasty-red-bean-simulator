@@ -310,6 +310,7 @@ while not done:
 
 	if show_beans==True and fading==False:
 		fading=False
+		print('coming')
 		if alph <= 500:
 			alph+=40
 		if alph >=500:
@@ -317,10 +318,11 @@ while not done:
 			print('false')
 			show_beans=False
 	if fading==True:
+		print('fading')
 		alph-=40
 		if alph<=0:
-			fading ==False
-
+			fading =False
+	print(alph)
 
 	# print(my_order)
 
