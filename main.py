@@ -8,7 +8,7 @@ draft = pygame.image.load("./assets/draft.png").convert_alpha()
 
 
 class KitchenThings(pygame.sprite.Sprite):
-	def __init__(self,image_link,coord_store, display):
+	def __init__(self,image_link,coord_store, display,kind):
 		super().__init__()
 		self.image_link=image_link
 		self.display = display
@@ -18,19 +18,29 @@ class KitchenThings(pygame.sprite.Sprite):
 		self.move_object = False
 		self.coord_store = coord_store
 		self.click_activate_count =0
+		self.kind = kind
+		self.using_rn = False
+		# if self.kind ==
+
 
 
 	def Render(self,coords):
 		if pygame.mouse.get_pressed()[0] ==True and self.rect.collidepoint(coords) ==True:
+			self.using_rn = True
 			self.click_activate_count=True
 			self.rect.x = coords[0]-100
 			self.rect.y = coords[1]-100
 			self.coord_store = coords
 		else:
+			self.using_rn = False
 			self.click_activate_count=False
 			self.rect.x = self.coord_store[0]-100
 			self.rect.y = self.coord_store[1]-100
 		self.display.blit(self.image,self.rect)
+
+	def check_use(self):
+		return self.using_rn
+
 
 class Customer(pygame.sprite.Sprite):
 	"""docstring for ClassName"""
@@ -40,7 +50,7 @@ class Customer(pygame.sprite.Sprite):
 		self.image = pygame.image.load('./assets/customer_test.png').convert_alpha()
 		self.rect = self.image.get_rect()
 	def Render(self):
-		self.display.blit(pygame.transform.scale(self.image,(200,200)),(100,100))
+		self.display.blit(pygame.transform.scale(self.image,(500,500)),(570,20))
 	def CheckOrder(self):
 		pass
 
@@ -50,9 +60,9 @@ class Customer(pygame.sprite.Sprite):
 
 done = False
 
-MyPot = KitchenThings('./assets/pot.png',(400,630),screen)
-RedBeans=KitchenThings('./assets/red_beans.png',(150,150),screen)
-Sugar=KitchenThings('./assets/sugar.png',(150,400),screen)
+MyPot = KitchenThings('./assets/pot.png',(400,630),screen,'pot')
+RedBeans=KitchenThings('./assets/red_beans.png',(150,150),screen,'ingredient')
+Sugar=KitchenThings('./assets/sugar.png',(150,400),screen,'ingredient')
 
 Customers = Customer(screen)
 
@@ -62,6 +72,10 @@ Customers = Customer(screen)
 # cursor_rect = cursor.get_rect()
 # click_activate_count = 0
 
+currently_dragging = False
+
+
+
 while not done:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -69,13 +83,17 @@ while not done:
 
 	mouse_pos = pygame.mouse.get_pos()
 	# print(mouse_pos)
+
+
 	screen.blit(draft,(0,0))
+	Customers.Render()
 	MyPot.Render(mouse_pos)
 	RedBeans.Render(mouse_pos)
 	Sugar.Render(mouse_pos)
 	
 
-
+	if RedBeans.check_use() ==True:
+		pass
 
 	# cursor_rect.center = pygame.mouse.get_pos()
 	# if pygame.mouse.get_pressed()[0] == False and click_activate_count==0:
