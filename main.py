@@ -1,4 +1,5 @@
 import pygame
+from datetime import datetime
 pygame.mixer.pre_init()
 pygame.init()
 # pygame.mouse.set_visible(False)
@@ -6,14 +7,16 @@ pygame.init()
 screen = pygame.display.set_mode((1280, 720))
 
 bg = pygame.image.load("./assets/bg.png").convert_alpha()
+bg = pygame.transform.scale(bg,(960,720))
+
 pot = pygame.image.load("./assets/pot.png").convert_alpha()
 pot = pygame.transform.scale(pot,(200,200))
 pot_rect = pot.get_rect()
 
-
+current_hour = int(datetime.now().strftime("%H"))
 
 done = False
-
+clock = pygame.time.Clock()
 
 
 
@@ -34,6 +37,8 @@ class KitchenThings(pygame.sprite.Sprite):
 		self.kind = kind
 
 		self.can_activate = True
+
+		self.status = 0
 
 	def Draw(self,active,mouse_pos):
 		
@@ -68,15 +73,23 @@ class Customer(pygame.sprite.Sprite):
 		self.rect.bottomleft = 1280,520
 		self.go_up = True
 		self.bottomleft_comp = [1280,520]
+		self.accel = 0
+		self.velocity = 50
 	def Render(self):
 		self.display.blit(self.image,self.rect)
 	def Update(self):
-		print(self.rect.bottom)
-		if self.bottomleft_comp[0]>570:
-			self.bottomleft_comp[0] -=2
 
+		# print(self.bottomleft_comp)
+		self.rect.bottomleft = self.bottomleft_comp
+		# print(self.rect.bottom)
+
+
+	def Move(self):#0: incoming, 1: wait, 2: leaving
+		self.accel=1
+		if self.bottomleft_comp[0]>570:
+			self.bottomleft_comp[0] -=self.velocity
+			self.velocity-=self.accel
 		if self.go_up ==True and self.bottomleft_comp[1] > 500:
-			print('asdf')
 			self.bottomleft_comp[1] -=0.5
 		if self.bottomleft_comp[1] == 500:
 			self.go_up=False
@@ -85,8 +98,12 @@ class Customer(pygame.sprite.Sprite):
 		if self.bottomleft_comp[1]==520:
 			self.go_up=True
 
-		print(self.bottomleft_comp)
-		self.rect.bottomleft = self.bottomleft_comp
+
+
+		if self.rect.left == 570:
+			return True
+
+
 
 		# if self.rect.bottom< 521:
 		# 	self.rect.move_ip(0,-1)
@@ -108,7 +125,12 @@ Heat = KitchenThings("./assets/heat.png",(1170,600),screen,'heat',213,114)
 CustomerTest = Customer('./assets/customer_test.png',screen)
 
 my_order = [0,0,0,0]
+customer_order = [2,3,5,1]
 #beans,sugar,water,heat
+
+order_correct = False
+
+side_bar_color = 'black'
 
 while not done:
 	for event in pygame.event.get():
@@ -119,9 +141,26 @@ while not done:
 	mouse_press = pygame.mouse.get_pressed()[0]
 
 
+	if current_hour>=7 and current_hour<=11:
+		# print('morning')
+		screen.fill((215,232,253))
+		side_bar_color= (111,153,64)
 
-	screen.blit(bg,(0,0))
+	elif current_hour>=12 and current_hour<=17:
+		screen.fill((170,196,201))
+		side_bar_color = (99,119,91)
+		# print('noon')
+	else:
+		screen.fill((48,64,90))
+		side_bar_color=(115,112,0)
+		# print('night')
+
+	screen.blit(bg,(320,0))
+	pygame.draw.rect(screen, side_bar_color, pygame.Rect(0, 0, 320, 720))
+
+	pygame.draw.rect(screen, (170,135,54), pygame.Rect(320, 570, 960, 150))
 	CustomerTest.Render()
+	CustomerTest.Move()
 	CustomerTest.Update()
 	screen.blit(pot,(300,500))
 	bean_counter = RedBeans.Draw(mouse_press,mouse_pos)
@@ -138,8 +177,15 @@ while not done:
 	elif heat_counter =='heat':
 		my_order[3]+=1
 
+
+
+	if my_order == customer_order:
+		order_correct=True
+	if sum(my_order) > sum(customer_order):
+		order_correct=False
+		print('reset order')
 	# print(my_order)
 
 
-
+	clock.tick(30)
 	pygame.display.flip()
