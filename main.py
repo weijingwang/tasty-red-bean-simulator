@@ -1,7 +1,12 @@
 import pygame
+import random
 from datetime import datetime
 pygame.mixer.pre_init()
 pygame.init()
+pygame.mixer.music.load("./assets/music/red-planet_compress.ogg")
+pygame.mixer.music.play(-1,0.0)
+pygame.mixer.music.set_volume(0.5)
+
 # pygame.mouse.set_visible(False)
 
 screen = pygame.display.set_mode((1280, 720))
@@ -17,6 +22,32 @@ current_hour = int(datetime.now().strftime("%H"))
 
 done = False
 clock = pygame.time.Clock()
+
+class ParticlePrinciple:
+	def __init__(self):
+		self.particles = []
+
+	def emit(self):
+		if self.particles:
+			self.delete_particles()
+			for particle in self.particles:
+				particle[0][1] += particle[2][0]
+				particle[0][0] += particle[2][1]
+				particle[1] -= 0.2
+				pygame.draw.circle(screen,pygame.Color(152,219,221),particle[0], int(particle[1]))
+
+	def add_particles(self):
+		pos_x = pygame.mouse.get_pos()[0]
+		pos_y = pygame.mouse.get_pos()[1] 
+		radius = 10
+		direction_x = random.randint(-3,3)
+		direction_y = random.randint(-3,3)
+		particle_circle = [[pos_x,pos_y],radius,[direction_x,direction_y]]
+		self.particles.append(particle_circle)
+
+	def delete_particles(self):
+		particle_copy = [particle for particle in self.particles if particle[1] > 0]
+		self.particles = particle_copy
 
 
 
@@ -68,11 +99,11 @@ class Customer(pygame.sprite.Sprite):
 		self.image_link = image_link
 		self.display = display
 		self.image = pygame.image.load(self.image_link).convert_alpha()
-		self.image = pygame.transform.scale(self.image,(500,500))
+		# self.image = pygame.transform.scale(self.image,(500,500))
 		self.rect = self.image.get_rect()
-		self.rect.bottomleft = 1280,520
+		self.rect.bottomleft = 1280,720
 		self.go_up = True
-		self.bottomleft_comp = [1280,520]
+		self.bottomleft_comp = [1280,720]
 		self.accel = 0
 		self.velocity = 50
 	def Render(self):
@@ -89,13 +120,13 @@ class Customer(pygame.sprite.Sprite):
 		if self.bottomleft_comp[0]>570:
 			self.bottomleft_comp[0] -=self.velocity
 			self.velocity-=self.accel
-		if self.go_up ==True and self.bottomleft_comp[1] > 500:
+		if self.go_up ==True and self.bottomleft_comp[1] > 690:
 			self.bottomleft_comp[1] -=0.5
-		if self.bottomleft_comp[1] == 500:
+		if self.bottomleft_comp[1] == 690:
 			self.go_up=False
-		if self.bottomleft_comp[1] < 520 and self.go_up == False:
+		if self.bottomleft_comp[1] < 730 and self.go_up == False:
 			self.bottomleft_comp[1] +=0.5
-		if self.bottomleft_comp[1]==520:
+		if self.bottomleft_comp[1]==730:
 			self.go_up=True
 
 
@@ -122,7 +153,7 @@ Sugar = KitchenThings("./assets/sugar.png",(150,400),screen,'sugar',200,200)
 Water = KitchenThings("./assets/water.png",(820,590),screen,'water',325,195)
 Heat = KitchenThings("./assets/heat.png",(1170,600),screen,'heat',213,114)
 
-CustomerTest = Customer('./assets/customer_test.png',screen)
+CustomerTest = Customer('./assets/customer.png',screen)
 
 my_order = [0,0,0,0]
 customer_order = [2,3,5,1]
@@ -132,10 +163,17 @@ order_correct = False
 
 side_bar_color = 'black'
 
+
+particle1 = ParticlePrinciple()
+PARTICLE_EVENT = pygame.USEREVENT + 1
+pygame.time.set_timer(PARTICLE_EVENT,40)
+
 while not done:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			quit()
+		if event.type == PARTICLE_EVENT:
+			particle1.add_particles()
 
 	mouse_pos = pygame.mouse.get_pos()
 	mouse_press = pygame.mouse.get_pressed()[0]
@@ -158,15 +196,21 @@ while not done:
 	screen.blit(bg,(320,0))
 	pygame.draw.rect(screen, side_bar_color, pygame.Rect(0, 0, 320, 720))
 
-	pygame.draw.rect(screen, (170,135,54), pygame.Rect(320, 570, 960, 150))
+
+
 	CustomerTest.Render()
 	CustomerTest.Move()
 	CustomerTest.Update()
+	pygame.draw.rect(screen, (170,135,54), pygame.Rect(320, 570, 960, 150))
+
 	screen.blit(pot,(300,500))
 	bean_counter = RedBeans.Draw(mouse_press,mouse_pos)
 	sugar_counter = Sugar.Draw(mouse_press,mouse_pos)
 	water_counter = Water.Draw(mouse_press,mouse_pos)
 	heat_counter = Heat.Draw(mouse_press,mouse_pos)
+
+
+
 
 	if bean_counter =='beans':
 		my_order[0]+=1
@@ -186,6 +230,6 @@ while not done:
 		print('reset order')
 	# print(my_order)
 
-
+	particle1.emit()
 	clock.tick(30)
 	pygame.display.flip()
