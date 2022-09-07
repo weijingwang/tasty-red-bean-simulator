@@ -110,12 +110,12 @@ class Customer(pygame.sprite.Sprite):
 	def Move(self,status):#0: incoming, 1: wait, 2: leaving
 		print(status)
 		if status == 0:
-			self.accel=1
+			# self.accel=1
 			if self.bottomleft_comp[0]>570:
 				self.bottomleft_comp[0] -=self.velocity
-				self.velocity-=self.accel
+				# self.velocity-=self.accel
 				return 0
-			if self.rect.left == 566:
+			if self.rect.left == 530:
 				print(self.bottomleft_comp[0])
 				return 1
 
@@ -135,10 +135,13 @@ class Customer(pygame.sprite.Sprite):
 			return 1
 			print('wait')
 
+
+
+
 		if status ==2:
 			if self.bottomleft_comp[0]>-400:
-				self.bottomleft_comp[0]-=20
-				return 'pooo'
+				self.bottomleft_comp[0]-=self.velocity
+				return 2
 			if self.bottomleft_comp[0]<=-400:
 				print('gfhjgh')
 				self.rect.bottomleft = 1280,720
