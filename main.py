@@ -420,13 +420,17 @@ class MainGame(pygame.sprite.Sprite):
 
 
 		self.patience_meter = 0
-		self.patience_rate = len(self.customer_order)*0.6#random.randint(2,6)/3
+		self.patience_rate = -0.5*sum(self.customer_order)+5#random.randint(2,6)/3
 		self.reset_patience = False
 		self.patience_rate_increment = 0
 		self.patience_rate_increaser = 0
 		# random.randint(1,5)/3
 		self.hp_color = (17,131,48)
 
+		if self.patience_rate>=5.5:
+			self.patience_rate=5.5
+		elif self.patience_rate<=0:
+			self.patience_rate = 1
 
 	def draw(self): 
 		if self.patience_meter<187:
@@ -500,7 +504,11 @@ class MainGame(pygame.sprite.Sprite):
 		if self.reset_patience==True:
 			self.patience_rate_increaser+=self.patience_rate_increment
 			self.patience_meter = 0
-			self.patience_rate = len(self.customer_order)*0.6+self.patience_rate_increaser
+			self.patience_rate = -0.5*sum(self.customer_order)+5+self.patience_rate_increaser
+			if self.patience_rate>=5.5:
+				self.patience_rate=5.5
+			elif self.patience_rate<=0:
+				self.patience_rate = 1
 			self.reset_patience = False
 		self.patience_meter+=self.patience_rate
 		# print('update')
