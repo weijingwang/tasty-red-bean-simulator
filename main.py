@@ -265,7 +265,52 @@ def order_image(order):
 
 
 
+class realText(pygame.sprite.Sprite):
+    def __init__(self,screen,pos,size) -> None:
+        super().__init__()
+        self.screen = screen
+        self.pos = pos
+        self.size = size
+        self.original_size = self.size
+        self.color=(250,250,250)
+        self.myFont = pygame.font.Font("./assets/font/TanoheSans-Medium.ttf", self.size)
+        self.image = self.myFont.render("_", 1, self.color)
+        self.rect = self.image.get_rect()
+        self.rect.center = self.pos
+        
+    def update(self,message):
+        self.rect = self.image.get_rect()
+        self.rect.center = self.pos
+        self.image = self.myFont.render(message, 1, self.color)
 
+class OrderText(pygame.sprite.Sprite):
+	def __init__(self,screen,pos,size,item_pos) -> None:
+		super().__init__()
+		self.item_pos=item_pos
+		self.screen = screen
+		self.pos = pos
+		self.size = size
+		self.original_size = self.size
+		self.color=(200,200,200)
+		self.myFont = pygame.font.Font("./assets/font/TanoheSans-Medium.ttf", self.size)
+		self.image = self.myFont.render("_", 1, self.color)
+		self.rect = self.image.get_rect()
+		self.rect.center = self.pos
+		self.item_images = [
+			pygame.transform.scale(pygame.image.load("./assets/red_beans.png").convert_alpha(),(50,50)),
+			pygame.transform.scale(pygame.image.load("./assets/sugar.png").convert_alpha(),(50,50)),
+			pygame.transform.scale(pygame.image.load("./assets/water.png").convert_alpha(),(50,50)),
+			pygame.transform.scale(pygame.image.load("./assets/heat.png").convert_alpha(),(50,50))
+			]
+		self.current_item_image = self.item_images[0]
+		self.item_rect = self.current_item_image.get_rect()
+		self.item_rect.center = self.item_pos
+	def update(self,message,type):
+		self.current_item_image = self.item_images[type]
+		self.rect = self.image.get_rect()
+		self.rect.center = self.pos
+		self.image = self.myFont.render(message, 1, self.color)
+		self.screen.blit(self.current_item_image,self.item_rect)
 
 
 
@@ -287,6 +332,14 @@ customer_order = [
 	random.randint(0, 3),
 	random.randint(0, 3)
 ]
+
+customer_order_counting = [
+customer_order[0]-my_order[0],
+customer_order[1]-my_order[1],
+customer_order[2]-my_order[2],
+customer_order[3]-my_order[3],
+]
+
 # calc_order_name(customer_order)
 #beans,sugar,water,heat
 
@@ -333,7 +386,38 @@ SCORE = 0
 ANGER = pygame.mixer.Sound("./assets/music/sound/ANGER.ogg")
 OK_SOUND = pygame.mixer.Sound("./assets/music/sound/CLICK.ogg")
 
+
+
+
+OrderText1 = OrderText(screen, (530,100),40,(400,100))
+OrderText2 = OrderText(screen, (530,170),40,(400,170))
+OrderText3 = OrderText(screen, (530,240),40,(400,240))
+OrderText4 = OrderText(screen, (530,330),40,(400,330))
+
+order_text_group1 = pygame.sprite.Group()
+order_text_group2 = pygame.sprite.Group()
+order_text_group3 = pygame.sprite.Group()
+order_text_group4 = pygame.sprite.Group()
+
+order_text_group1.add(OrderText1)
+order_text_group2.add(OrderText2)
+order_text_group3.add(OrderText3)
+order_text_group4.add(OrderText4)
+
+ScoreText = realText(screen,(1070,50),30)
+ScoreText_group=pygame.sprite.Group()
+ScoreText_group.add(ScoreText)
+
+
+
+
 while not done:
+	customer_order_counting = [
+	customer_order[0]-my_order[0],
+	customer_order[1]-my_order[1],
+	customer_order[2]-my_order[2],
+	customer_order[3]-my_order[3],
+	]
 
 	# print(customer_order)
 	for event in pygame.event.get():
@@ -379,8 +463,26 @@ while not done:
 	screen.blit(pot,(300,500))
 
 
+
+	order_text_group1.update(str(customer_order_counting[0]),0)
+	order_text_group1.draw(screen)
+	order_text_group2.update(str(customer_order_counting[1]),1)
+	order_text_group2.draw(screen)
+	order_text_group3.update(str(customer_order_counting[2]),2)
+	order_text_group3.draw(screen)
+	order_text_group4.update(str(customer_order_counting[3]),3)
+	order_text_group4.draw(screen)
+
+	ScoreText_group.update('Happy Customers: '+str(SCORE))
+	ScoreText_group.draw(screen)
+
+
+
 	finished_dish1.set_alpha(alph)
 	screen.blit(finished_dish1,(0,0))
+
+
+
 
 
 	# print(customer_status_output)
