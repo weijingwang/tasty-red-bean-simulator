@@ -418,7 +418,23 @@ class MainGame(pygame.sprite.Sprite):
 
 		self.count_before_jumpscare = random.randint(2,3)
 
-	def draw(self):
+
+		self.patience_meter = 0
+		self.patience_rate = len(self.customer_order)*0.6#random.randint(2,6)/3
+		self.reset_patience = False
+		self.patience_rate_increment = 0
+		self.patience_rate_increaser = 0
+		# random.randint(1,5)/3
+		self.hp_color = (17,131,48)
+
+
+	def draw(self): 
+		if self.patience_meter<187:
+			self.hp_color = (17,255,18)
+		elif self.patience_meter>353:
+			self.hp_color = (255,14,23)
+		else:
+			self.hp_color = (255,255,10) 
 		# print('draw')
 		if self.current_hour>=7 and self.current_hour<=11:
 			self.display.fill((215,232,253))
@@ -464,6 +480,9 @@ class MainGame(pygame.sprite.Sprite):
 		self.display.blit(self.finished_dish1,(0,0))
 		self.particle1.emit()
 
+		pygame.draw.rect(self.display, (95,93,92), pygame.Rect(50, 25, 500, 5))
+		pygame.draw.rect(self.display, self.hp_color, pygame.Rect(50, 25, self.patience_meter, 5))
+
 	def Initialize(self):
 		# print('init')
 		self.mouse_pos = pygame.mouse.get_pos()
@@ -476,6 +495,14 @@ class MainGame(pygame.sprite.Sprite):
 		self.customer_order[3]-self.my_order[3],
 		]
 	def Update(self):
+		print(len(self.customer_order),self.patience_rate)
+
+		if self.reset_patience==True:
+			self.patience_rate_increaser+=self.patience_rate_increment
+			self.patience_meter = 0
+			self.patience_rate = len(self.customer_order)*0.6+self.patience_rate_increaser
+			self.reset_patience = False
+		self.patience_meter+=self.patience_rate
 		# print('update')
 		if self.bean_counter =='beans':
 			self.my_order[0]+=1
@@ -485,6 +512,7 @@ class MainGame(pygame.sprite.Sprite):
 			self.my_order[2]+=1
 		elif self.heat_counter =='heat':
 			self.my_order[3]+=1
+
 		if self.my_order == self.customer_order:
 			self.current_dish = order_image(self.customer_order)
 			self.finished_dish1 = pygame.image.load(self.menu[self.current_dish]).convert_alpha()
@@ -493,6 +521,7 @@ class MainGame(pygame.sprite.Sprite):
 			self.order_correct=True
 			self.customer_status = 2
 			self.show_beans = True
+			self.reset_patience=True
 			self.my_order = [0,0,0,0]
 			self.SCORE +=1
 			# print('score is '+str(self.SCORE))
@@ -502,12 +531,21 @@ class MainGame(pygame.sprite.Sprite):
 				random.randint(0, 3),
 				random.randint(0, 3)
 			]
-			print(self.customer_order)
+			# print(self.customer_order)
 
 		if sum(self.my_order) > sum(self.customer_order):
 			pygame.mixer.Sound.play(self.ANGER)
 			self.customer_status = 2
 			self.order_correct=False
+			self.reset_patience = True
+			self.my_order = [0,0,0,0]
+			self.FAIL_COUNT+=1
+
+		elif self.patience_meter>=500:
+			pygame.mixer.Sound.play(self.ANGER)
+			self.customer_status = 2
+			self.order_correct=False
+			self.reset_patience = True
 			self.my_order = [0,0,0,0]
 			self.FAIL_COUNT+=1
 			# print('reset order')
@@ -517,7 +555,7 @@ class MainGame(pygame.sprite.Sprite):
 			self.can_jump=True
 			self.FAIL_COUNT=0
 			pygame.mixer.Sound.play(self.ANGER)
-		print(self.count_before_jumpscare)
+		# print(self.count_before_jumpscare)
 		# if self.SCORE>=3:
 		# 	self.do_boss=True
 
@@ -679,7 +717,7 @@ while not done:
 	MyGame.Initialize()
 	MyGame.draw()
 	MyGame.Update()
-	if myscore>=3:
+	if myscore>=30:
 		print(myscore)
 		done=True
 	pygame.display.flip()
