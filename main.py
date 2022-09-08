@@ -3,9 +3,8 @@ import random
 from datetime import datetime
 pygame.mixer.pre_init()
 pygame.init()
-
+pygame.display.set_caption("Tasty Red Bean Simulator (Pyweek34)")
 screen = pygame.display.set_mode((1280, 720))
-done = False
 clock = pygame.time.Clock()
 
 pygame.mixer.music.load("./assets/music/red-planet_compress.ogg")
@@ -54,6 +53,32 @@ def order_image(order):
 		print(order)
 		print('Nothing')
 		return 5
+
+class Text(pygame.sprite.Sprite):
+    def __init__(self,screen,message,pos,size,bottom) -> None:
+        super().__init__()
+        self.screen = screen
+        self.pos = pos
+        self.size = size
+        self.bottom = bottom
+        self.original_size = self.size
+        self.color=(200,200,200)
+        self.myFont = pygame.font.Font("./assets/font/Ubuntu-Title.ttf", self.size)
+        self.message = message
+        self.image = self.myFont.render(self.message, 1, self.color)
+        self.rect = self.image.get_rect()
+        self.rect.center = self.pos
+        
+    def update(self,on):
+        self.rect.center = self.pos
+        if on==True:
+            self.color = (250,200,200)
+        elif on==False:
+            self.color = (70,67,78)
+        if self.bottom == True:
+            self.color = (100,97,108)
+        self.image = self.myFont.render(self.message, 1, self.color)
+
 
 class ParticlePrinciple:
 	def __init__(self):
@@ -549,6 +574,53 @@ class ScaleSprite(pygame.sprite.Sprite):
 		self.image = pygame.transform.scale(self.original_image, (self.size_x, self.size_y))
 		self.rect = self.image.get_rect(center = self.rect.center)
 
+class SlideShow(object):
+	"""docstring for SlideShow"""
+	def __init__(self,screen):
+		super().__init__()
+		self.screen = screen
+		self.title_text = Text(self.screen,"Tasty Red Bean Simulator",(1280/2,720-720/5-720/20),100,False)
+		self.text_group = pygame.sprite.Group()
+		self.text_group.add(self.title_text)
+		self.images = [
+		pygame.image.load("./assets/title/title1.png").convert_alpha(),
+		pygame.image.load("./assets/title/nasa_mars.jpeg").convert_alpha(),
+		pygame.image.load("./assets/title/title2.png").convert_alpha(),
+		pygame.image.load("./assets/title/nasa_rover.jpeg").convert_alpha(),
+		pygame.image.load("./assets/title/title3a.png").convert_alpha(),
+		pygame.image.load("./assets/title/title4.png").convert_alpha(),
+		pygame.image.load("./assets/title/title5.png").convert_alpha()
+		]
+		self.index = 0
+		self.image = self.images[self.index]
+		self.rect=self.image.get_rect()
+		self.alph = 10
+		self.image.set_alpha(self.alph)
+		self.mode = 1
+	def draw(self):
+		self.screen.fill('black')
+		if self.alph >=400:
+			self.mode =-1
+		elif self.alph <=-0:
+			self.index+=1
+			if self.index>len(self.images)-1:
+				self.index=0
+			self.image = self.images[self.index]
+			self.mode=1
+
+		self.alph +=10*self.mode
+		self.image.set_alpha(self.alph)
+
+
+		self.screen.blit(self.image,self.rect)
+
+		self.text_group.update(True)
+		self.text_group.draw(self.screen)
+
+
+		
+
+
 class Title(object):
 	"""docstring for TitleImage"""
 	def __init__(self, size,screen):
@@ -561,36 +633,50 @@ class Title(object):
 		self.Title3 = JumpScare("./assets/title/title3.png",self.screen)
 		self.Title4 = JumpScare("./assets/title/title4.png",self.screen)
 		self.Title5 = JumpScare("./assets/title/title5.png",self.screen)
+		self.mouse_pos = pygame.mouse.get_pos()
+		self.mouse_press = pygame.mouse.get_pressed()[0]
 
 	def Draw(self):
 		print('draw')
 		self.Title1.update(True)
 
 
-# TitleTest = Title(0,screen)
-# MyGame = MainGame(screen)
+MySlides = SlideShow(screen)
+title_done = False
+particle1=ParticlePrinciple()
+PARTICLE_EVENT = pygame.USEREVENT + 1
+pygame.time.set_timer(PARTICLE_EVENT,100)
+while not title_done:
+	for event in pygame.event.get():
+		if event.type == PARTICLE_EVENT:
+			particle1.add_particles()
+		if event.type == pygame.QUIT:
+			quit()
+		if event.type == pygame.KEYDOWN:
+			print('poo')
+			title_done = True
+	if pygame.mouse.get_pressed()[0] == True:
+		title_done=True
+	MySlides.draw()
+	particle1.emit()
+	clock.tick(30)
+	pygame.display.flip()
 
-sprite = ScaleSprite(screen.get_rect().center, "./assets/title/title4.png",(0,0))
-group = pygame.sprite.Group(sprite)
 
+done = False
+MyGame = MainGame(screen)
 while not done:
-
 	clock.tick(30)
 
-	# myscore = MyGame.ScoreReturn()
+	myscore = MyGame.ScoreReturn()
 
-	# MyGame.CheckInput()
-	# MyGame.Initialize()
-	# # MyGame.draw()
-	# # MyGame.Update()
-	# if myscore>=3:
-	# 	print(myscore)
-	# 	done=True
-	group.update()
-	screen.fill(0)
-	group.draw(screen)
-	
-
+	MyGame.CheckInput()
+	MyGame.Initialize()
+	MyGame.draw()
+	MyGame.Update()
+	if myscore>=3:
+		print(myscore)
+		done=True
 	pygame.display.flip()
 
 
