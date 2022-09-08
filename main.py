@@ -544,7 +544,10 @@ while not done:
 	if FAIL_COUNT>=3:
 		can_jump=True
 		FAIL_COUNT=0
+		pygame.mixer.Sound.play(ANGER)
+		
 	if can_jump==True:
+
 		MyJump_group.update(can_jump)
 		MyJump_group.draw(screen)
 		done_jump = MyJump.kill_now()
