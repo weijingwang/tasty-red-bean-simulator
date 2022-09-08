@@ -239,51 +239,6 @@ class JumpScare(pygame.sprite.Sprite):
 			self.height =0
 			self.width = 0
 			return True
-			
-
-	
-# def calc_order_name(order):
-# 	order_string = []
-
-
-# 	if order[0]!=0 and order[1]!=0 and order[2]!=0 and order[3]!=0:
-# 		order_string.append('red bean soup')
-# 	elif order == [0,0,0,0]:
-# 		order_string.append('hey guys')
-
-# 	if order[3]!=0:
-# 		order_string.append('hot')
-# 	if order[1]!=0:
-# 		order_string.append('sweet')
-# 	if order[0]!=0:
-# 		order_string.append('bean')
-# 	if order[2]!=0:
-# 		order_string.append('water')
-
-
-# 	if order[0]==1:
-# 		order_string.append('less beans')
-# 	elif order[0]==3:
-# 		order_string.append('extra beans')
-
-# 	if order[1]==1:
-# 		order_string.append('less sugar')
-# 	elif order[1]==3:
-# 		order_string.append('extra sugar')
-
-# 	if order[2]==1:
-# 		order_string.append('less water')
-# 	elif order[2]==3:
-# 		order_string.append('extra water')
-
-# 	if order[3]==1:
-# 		order_string.append('less hot')
-# 	elif order[3]==3:
-# 		order_string.append('extra hot')
-
-
-# 	print(order_string)
-
 
 
 #beans,sugar,water,heat
@@ -434,6 +389,7 @@ customer_status = 0
 SCORE = 0
 FAIL_COUNT=0
 can_jump = False
+do_boss = False
 
 
 
@@ -482,10 +438,11 @@ while not done:
 	order_text_group4.update(str(customer_order_counting[3]),3)
 	order_text_group4.draw(screen)
 
-	CustomerTest.Render()
-	customer_status_output = CustomerTest.Move(customer_status,order_correct)
-	customer_status = customer_status_output
-	CustomerTest.Update()
+	if do_boss == False:
+		CustomerTest.Render()
+		customer_status_output = CustomerTest.Move(customer_status,order_correct)
+		customer_status = customer_status_output
+		CustomerTest.Update()
 
 	pygame.draw.rect(screen, (170,135,54), pygame.Rect(0, 570, 1280, 150))
 
@@ -493,8 +450,9 @@ while not done:
 	heat_counter = Heat.Draw(mouse_press,mouse_pos)
 	screen.blit(pot,(300,500))
 
-	ScoreText_group.update('Happy Customers: '+str(SCORE))
-	ScoreText_group.draw(screen)
+	if do_boss==False:
+		ScoreText_group.update('Happy Customers: '+str(SCORE))
+		ScoreText_group.draw(screen)
 
 	finished_dish1.set_alpha(alph)
 
@@ -545,7 +503,10 @@ while not done:
 		can_jump=True
 		FAIL_COUNT=0
 		pygame.mixer.Sound.play(ANGER)
-		
+
+	if SCORE>=3:
+		do_boss=True
+
 	if can_jump==True:
 
 		MyJump_group.update(can_jump)
