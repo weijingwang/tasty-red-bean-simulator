@@ -220,22 +220,25 @@ class JumpScare(pygame.sprite.Sprite):
 		self.width = 0
 
 
-	def update(self):
-		self.display.blit(self.bg,(0,0,1280,720))
-		# if is_alive==0:
-		# 	self.kill()
-		if self.height<=800:
-			self.width+=1280*self.scalar
-			self.height+=720*self.scalar
-		# elif self.height>=800:
-		# 	pass
+	def update(self,scare_now):
+		if scare_now==True:
+			self.display.blit(self.bg,(0,0,1280,720))
+			# if is_alive==0:
+			# 	self.kill()
+			if self.height<=800:
+				self.width+=1280*self.scalar
+				self.height+=720*self.scalar
+			# elif self.height>=800:
+			# 	pass
 
-		self.image = pygame.transform.scale(self.original_image, (int(self.width),int(self.height)))
-		self.rect = self.image.get_rect(center = (640,360))
+			self.image = pygame.transform.scale(self.original_image, (int(self.width),int(self.height)))
+			self.rect = self.image.get_rect(center = (640,360))
 		# self.display.blit(self.image,self.rect)
 	def kill_now(self):
 		if self.height>=800:
-			self.kill()
+			self.height =0
+			self.width = 0
+			return True
 			
 
 	
@@ -542,9 +545,11 @@ while not done:
 		can_jump=True
 		FAIL_COUNT=0
 	if can_jump==True:
-		MyJump_group.update()
+		MyJump_group.update(can_jump)
 		MyJump_group.draw(screen)
-		MyJump.kill_now()
+		done_jump = MyJump.kill_now()
+		if done_jump==True:
+			can_jump=False
 
 		
 
