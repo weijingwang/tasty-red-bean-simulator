@@ -3,25 +3,6 @@ import random
 from datetime import datetime
 pygame.mixer.pre_init()
 pygame.init()
-pygame.mixer.music.load("./assets/music/red-planet_compress.ogg")
-pygame.mixer.music.play(-1,0.0)
-pygame.mixer.music.set_volume(0.5)
-
-# pygame.mouse.set_visible(False)
-
-screen = pygame.display.set_mode((1280, 720))
-
-bg = pygame.image.load("./assets/bg.png").convert_alpha()
-bg = pygame.transform.scale(bg,(960,720))
-
-pot = pygame.image.load("./assets/pot.png").convert_alpha()
-pot = pygame.transform.scale(pot,(200,200))
-pot_rect = pot.get_rect()
-
-current_hour = int(datetime.now().strftime("%H"))
-
-done = False
-clock = pygame.time.Clock()
 
 class ParticlePrinciple:
 	def __init__(self):
@@ -48,7 +29,6 @@ class ParticlePrinciple:
 	def delete_particles(self):
 		particle_copy = [particle for particle in self.particles if particle[1] > 0]
 		self.particles = particle_copy
-
 
 class KitchenThings(pygame.sprite.Sprite):
 	def __init__(self,image_link,coords, display,kind,width,height):
@@ -87,7 +67,6 @@ class KitchenThings(pygame.sprite.Sprite):
 		else:
 			self.can_activate=True
 			self.display.blit(self.image,self.rect)
-
 
 class Customer(pygame.sprite.Sprite):
 	"""docstring for ClassName"""
@@ -173,6 +152,53 @@ class Customer(pygame.sprite.Sprite):
 
 	def CheckOrder(self):
 		pass
+
+class realText(pygame.sprite.Sprite):
+    def __init__(self,screen,pos,size) -> None:
+        super().__init__()
+        self.screen = screen
+        self.pos = pos
+        self.size = size
+        self.original_size = self.size
+        self.color=(250,250,250)
+        self.myFont = pygame.font.Font("./assets/font/TanoheSans-Medium.ttf", self.size)
+        self.image = self.myFont.render("_", 1, self.color)
+        self.rect = self.image.get_rect()
+        self.rect.center = self.pos
+        
+    def update(self,message):
+        self.rect = self.image.get_rect()
+        self.rect.center = self.pos
+        self.image = self.myFont.render(message, 1, self.color)
+
+class OrderText(pygame.sprite.Sprite):
+	def __init__(self,screen,pos,size,item_pos) -> None:
+		super().__init__()
+		self.item_pos=item_pos
+		self.screen = screen
+		self.pos = pos
+		self.size = size
+		self.original_size = self.size
+		self.color=(200,200,200)
+		self.myFont = pygame.font.Font("./assets/font/TanoheSans-Medium.ttf", self.size)
+		self.image = self.myFont.render("_", 1, self.color)
+		self.rect = self.image.get_rect()
+		self.rect.center = self.pos
+		self.item_images = [
+			pygame.transform.scale(pygame.image.load("./assets/red_beans.png").convert_alpha(),(50,50)),
+			pygame.transform.scale(pygame.image.load("./assets/sugar.png").convert_alpha(),(50,50)),
+			pygame.transform.scale(pygame.image.load("./assets/water.png").convert_alpha(),(50,50)),
+			pygame.transform.scale(pygame.image.load("./assets/heat.png").convert_alpha(),(50,50))
+			]
+		self.current_item_image = self.item_images[0]
+		self.item_rect = self.current_item_image.get_rect()
+		self.item_rect.center = self.item_pos
+	def update(self,message,type):
+		self.current_item_image = self.item_images[type]
+		self.rect = self.image.get_rect()
+		self.rect.center = self.pos
+		self.image = self.myFont.render(message, 1, self.color)
+		self.screen.blit(self.current_item_image,self.item_rect)
 
 
 
@@ -265,130 +291,36 @@ def order_image(order):
 
 
 
-class realText(pygame.sprite.Sprite):
-    def __init__(self,screen,pos,size) -> None:
-        super().__init__()
-        self.screen = screen
-        self.pos = pos
-        self.size = size
-        self.original_size = self.size
-        self.color=(250,250,250)
-        self.myFont = pygame.font.Font("./assets/font/TanoheSans-Medium.ttf", self.size)
-        self.image = self.myFont.render("_", 1, self.color)
-        self.rect = self.image.get_rect()
-        self.rect.center = self.pos
-        
-    def update(self,message):
-        self.rect = self.image.get_rect()
-        self.rect.center = self.pos
-        self.image = self.myFont.render(message, 1, self.color)
 
-class OrderText(pygame.sprite.Sprite):
-	def __init__(self,screen,pos,size,item_pos) -> None:
-		super().__init__()
-		self.item_pos=item_pos
-		self.screen = screen
-		self.pos = pos
-		self.size = size
-		self.original_size = self.size
-		self.color=(200,200,200)
-		self.myFont = pygame.font.Font("./assets/font/TanoheSans-Medium.ttf", self.size)
-		self.image = self.myFont.render("_", 1, self.color)
-		self.rect = self.image.get_rect()
-		self.rect.center = self.pos
-		self.item_images = [
-			pygame.transform.scale(pygame.image.load("./assets/red_beans.png").convert_alpha(),(50,50)),
-			pygame.transform.scale(pygame.image.load("./assets/sugar.png").convert_alpha(),(50,50)),
-			pygame.transform.scale(pygame.image.load("./assets/water.png").convert_alpha(),(50,50)),
-			pygame.transform.scale(pygame.image.load("./assets/heat.png").convert_alpha(),(50,50))
-			]
-		self.current_item_image = self.item_images[0]
-		self.item_rect = self.current_item_image.get_rect()
-		self.item_rect.center = self.item_pos
-	def update(self,message,type):
-		self.current_item_image = self.item_images[type]
-		self.rect = self.image.get_rect()
-		self.rect.center = self.pos
-		self.image = self.myFont.render(message, 1, self.color)
-		self.screen.blit(self.current_item_image,self.item_rect)
-
-
-
-
-
-
-RedBeans = KitchenThings("./assets/red_beans.png",(150,150),screen,'beans',200,200)
-Sugar = KitchenThings("./assets/sugar.png",(150,400),screen,'sugar',200,200)
-Water = KitchenThings("./assets/water.png",(800,590),screen,'water',325,195)
-Heat = KitchenThings("./assets/heat.png",(1150,650),screen,'heat',213,114)
-
-CustomerTest = Customer(screen)
-
-
-my_order = [0,0,0,0]
-customer_order = [
-	random.randint(0, 3),
-	random.randint(0, 3),
-	random.randint(0, 3),
-	random.randint(0, 3)
-]
-
-customer_order_counting = [
-customer_order[0]-my_order[0],
-customer_order[1]-my_order[1],
-customer_order[2]-my_order[2],
-customer_order[3]-my_order[3],
-]
-
-# calc_order_name(customer_order)
-#beans,sugar,water,heat
-
-
-order_correct = False
-
-side_bar_color = 'black'
-
-
-particle1 = ParticlePrinciple()
-PARTICLE_EVENT = pygame.USEREVENT + 1
-pygame.time.set_timer(PARTICLE_EVENT,40)
-
-
-customer_status = 0
-
-
-
-#FADERS=======
-Red_Bean_Soup = "./assets/foods/Red_Bean_Soup.png"
-Beans_Cup = "./assets/foods/Beans_Cup.png"
-Sugar_Cup = "./assets/foods/Sugar_Cup.png"
-Sugar_Water = "./assets/foods/Sugar_Water.png"
-Water_Cup= "./assets/foods/Water_Cup.png"
-Nothing ="./assets/foods/Nothing.png"
-
-menu = [Red_Bean_Soup,Beans_Cup,Sugar_Cup,Sugar_Water,Water_Cup,Nothing]
-
-current_dish = order_image(customer_order)
-
-finished_dish1 = pygame.image.load(menu[current_dish]).convert_alpha()
-finished_dish1.set_alpha(0)
-alph = 0
-fading = False
-show_beans=False
-
-
-
-SCORE = 0
-
-
-
+pygame.mixer.music.load("./assets/music/red-planet_compress.ogg")
+pygame.mixer.music.play(-1,0.0)
+pygame.mixer.music.set_volume(0.5)
 #SOUND++++++++++++++++
 ANGER = pygame.mixer.Sound("./assets/music/sound/ANGER.ogg")
 OK_SOUND = pygame.mixer.Sound("./assets/music/sound/CLICK.ogg")
 
 
+current_hour = int(datetime.now().strftime("%H"))
+screen = pygame.display.set_mode((1280, 720))
+clock = pygame.time.Clock()
 
+bg = pygame.image.load("./assets/bg.png").convert_alpha()
+bg = pygame.transform.scale(bg,(960,720))
+pot = pygame.image.load("./assets/pot.png").convert_alpha()
+pot = pygame.transform.scale(pot,(200,200))
+pot_rect = pot.get_rect()
 
+RedBeans = KitchenThings("./assets/red_beans.png",(150,150),screen,'beans',200,200)
+Sugar = KitchenThings("./assets/sugar.png",(150,400),screen,'sugar',200,200)
+Water = KitchenThings("./assets/water.png",(800,590),screen,'water',325,195)
+Heat = KitchenThings("./assets/heat.png",(1150,650),screen,'heat',213,114)
+CustomerTest = Customer(screen)
+
+particle1 = ParticlePrinciple()
+PARTICLE_EVENT = pygame.USEREVENT + 1
+pygame.time.set_timer(PARTICLE_EVENT,40)
+
+#TEXT----------------------
 OrderText1 = OrderText(screen, (530,100),40,(400,100))
 OrderText2 = OrderText(screen, (530,170),40,(400,170))
 OrderText3 = OrderText(screen, (530,240),40,(400,240))
@@ -407,19 +339,61 @@ order_text_group4.add(OrderText4)
 ScoreText = realText(screen,(1070,50),30)
 ScoreText_group=pygame.sprite.Group()
 ScoreText_group.add(ScoreText)
+#------------------------
+
+
+#ORDER$$$$$$$$$$$$$$$
+my_order = [0,0,0,0]
+customer_order = [
+	random.randint(0, 3),
+	random.randint(0, 3),
+	random.randint(0, 3),
+	random.randint(0, 3)
+]
+
+customer_order_counting = [
+customer_order[0]-my_order[0],
+customer_order[1]-my_order[1],
+customer_order[2]-my_order[2],
+customer_order[3]-my_order[3],
+]
+#$$$$$$$$$$$$$$$$$
+
+#FADERS=======
+Red_Bean_Soup = "./assets/foods/Red_Bean_Soup.png"
+Beans_Cup = "./assets/foods/Beans_Cup.png"
+Sugar_Cup = "./assets/foods/Sugar_Cup.png"
+Sugar_Water = "./assets/foods/Sugar_Water.png"
+Water_Cup= "./assets/foods/Water_Cup.png"
+Nothing ="./assets/foods/Nothing.png"
+
+menu = [Red_Bean_Soup,Beans_Cup,Sugar_Cup,Sugar_Water,Water_Cup,Nothing]
+
+current_dish = order_image(customer_order)
+
+finished_dish1 = pygame.image.load(menu[current_dish]).convert_alpha()
+finished_dish1.set_alpha(0)
+alph = 0
+fading = False
+show_beans=False
+#============
+
+# calc_order_name(customer_order)
+#beans,sugar,water,heat
+
+
+done = False
+order_correct = False
+side_bar_color = 'black'
+customer_status = 0
+SCORE = 0
+
 
 
 
 
 while not done:
-	customer_order_counting = [
-	customer_order[0]-my_order[0],
-	customer_order[1]-my_order[1],
-	customer_order[2]-my_order[2],
-	customer_order[3]-my_order[3],
-	]
 
-	# print(customer_order)
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			quit()
@@ -429,40 +403,29 @@ while not done:
 	mouse_pos = pygame.mouse.get_pos()
 	mouse_press = pygame.mouse.get_pressed()[0]
 
+	customer_order_counting = [
+		customer_order[0]-my_order[0],
+		customer_order[1]-my_order[1],
+		customer_order[2]-my_order[2],
+		customer_order[3]-my_order[3],
+	]
+
 
 	if current_hour>=7 and current_hour<=11:
-		# print('morning')
 		screen.fill((215,232,253))
 		side_bar_color= (111,153,64)
 
 	elif current_hour>=12 and current_hour<=17:
 		screen.fill((170,196,201))
 		side_bar_color = (99,119,91)
-		# print('noon')
 	else:
 		screen.fill((48,64,90))
 		side_bar_color=(115,112,0)
-		# print('night')
 
 	screen.blit(bg,(320,0))
 	pygame.draw.rect(screen, side_bar_color, pygame.Rect(0, 0, 320, 720))
 	bean_counter = RedBeans.Draw(mouse_press,mouse_pos)
 	sugar_counter = Sugar.Draw(mouse_press,mouse_pos)
-
-
-	CustomerTest.Render()
-	customer_status_output = CustomerTest.Move(customer_status,order_correct)
-	customer_status = customer_status_output
-	CustomerTest.Update()
-
-
-	pygame.draw.rect(screen, (170,135,54), pygame.Rect(0, 570, 1280, 150))
-
-	water_counter = Water.Draw(mouse_press,mouse_pos)
-	heat_counter = Heat.Draw(mouse_press,mouse_pos)
-	screen.blit(pot,(300,500))
-
-
 
 	order_text_group1.update(str(customer_order_counting[0]),0)
 	order_text_group1.draw(screen)
@@ -473,24 +436,24 @@ while not done:
 	order_text_group4.update(str(customer_order_counting[3]),3)
 	order_text_group4.draw(screen)
 
+	CustomerTest.Render()
+	customer_status_output = CustomerTest.Move(customer_status,order_correct)
+	customer_status = customer_status_output
+	CustomerTest.Update()
+
+	pygame.draw.rect(screen, (170,135,54), pygame.Rect(0, 570, 1280, 150))
+
+	water_counter = Water.Draw(mouse_press,mouse_pos)
+	heat_counter = Heat.Draw(mouse_press,mouse_pos)
+	screen.blit(pot,(300,500))
+
 	ScoreText_group.update('Happy Customers: '+str(SCORE))
 	ScoreText_group.draw(screen)
-
-
 
 	finished_dish1.set_alpha(alph)
 	screen.blit(finished_dish1,(0,0))
 
-
-
-
-
-	# print(customer_status_output)
-
-
-
-
-	# print(show_beans)
+	particle1.emit()
 
 	if bean_counter =='beans':
 		my_order[0]+=1
@@ -500,7 +463,6 @@ while not done:
 		my_order[2]+=1
 	elif heat_counter =='heat':
 		my_order[3]+=1
-
 
 
 	if my_order == customer_order:
@@ -521,8 +483,6 @@ while not done:
 			random.randint(0, 3)
 		]
 		print(customer_order)
-		# calc_order_name(customer_order)
-
 
 	if sum(my_order) > sum(customer_order):
 		pygame.mixer.Sound.play(ANGER)
@@ -545,12 +505,6 @@ while not done:
 		alph-=40
 		if alph<=0:
 			fading =False
-	# print(alph)
-
-	# print(my_order)
-
-
-
-	particle1.emit()
+	
 	clock.tick(30)
 	pygame.display.flip()
