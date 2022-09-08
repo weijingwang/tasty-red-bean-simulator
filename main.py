@@ -530,25 +530,27 @@ class MainGame(pygame.sprite.Sprite):
 		return self.SCORE
 
 
-class TitleImage(pygame.sprite.Sprite):
+class Title(object):
 	"""docstring for TitleImage"""
 	def __init__(self, size,screen):
 		super().__init__()
 		self.size = size
 		self.screen = screen
-		
+
+		self.Title1 = JumpScare("./assets/title/title1.png",self.screen)
+		self.Title2 = JumpScare("./assets/title/title2.png",self.screen)
+		self.Title3 = JumpScare("./assets/title/title3.png",self.screen)
+		self.Title4 = JumpScare("./assets/title/title4.png",self.screen)
+		self.Title5 = JumpScare("./assets/title/title5.png",self.screen)
 
 
 
-# title_done = False
-# while not title_done:
 
-
-
-
+TitleTest = Title(0,screen)
 
 MyGame = MainGame(screen)
 while not done:
+
 	myscore = MyGame.ScoreReturn()
 
 	MyGame.CheckInput()
