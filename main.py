@@ -224,34 +224,42 @@ class Customer(pygame.sprite.Sprite):
 # menu = [Red_Bean_Soup,	Beans_Cup,	Sugar_Cup,	Sugar_Water,	Water_Cup,	Nothing]
 def order_image(order):
 	if order[0]!=0 and order[1]!=0 and order[2]!=0:
+		print(order)
 		print('red bean soup')
 		return 0
 	if order[0]!=0 and order[1]==0 and order[2]!=0:
+		print(order)
 		print('red bean soup (no sugar)')
 		return 0
 
 	if order[0]!=0 and order[1]==0 and order[2]==0:
+		print(order)
 		print('bean cup')
 		return 1
 	if order[0]!=0 and order[1]!=0 and order[2]==0:
+		print(order)
 		print('bean cup (w/ sugar)')
 		return 1
 
 	if order[0]==0 and order[1]!=0 and order[2]==0:
+		print(order)
 		print('sugar cup')
 		return 2
-		
+
 	if order[0]==0 and order[1]!=0 and order[2]!=0:
+		print(order)
 		print('sugar water')
 		return 3
 
 
 	if order[0]==0 and order[1]==0 and order[2]!=0:
+		print(order)
 		print('water cup')
 		return 4
 
 
 	if order[0]==0 and order[1]==0 and order[2]==0:
+		print(order)
 		print('Nothing')
 		return 5
 
@@ -327,7 +335,7 @@ OK_SOUND = pygame.mixer.Sound("./assets/music/sound/CLICK.ogg")
 
 while not done:
 
-	print(customer_order)
+	# print(customer_order)
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			quit()
@@ -394,6 +402,9 @@ while not done:
 
 
 	if my_order == customer_order:
+		current_dish = order_image(customer_order)
+		finished_dish1 = pygame.image.load(menu[current_dish]).convert_alpha()
+
 		pygame.mixer.Sound.play(OK_SOUND)
 		order_correct=True
 		customer_status = 2
@@ -407,10 +418,8 @@ while not done:
 			random.randint(0, 3),
 			random.randint(0, 3)
 		]
+		print(customer_order)
 		# calc_order_name(customer_order)
-		current_dish = order_image(customer_order)
-
-		finished_dish1 = pygame.image.load(menu[current_dish]).convert_alpha()
 
 
 	if sum(my_order) > sum(customer_order):
