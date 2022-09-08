@@ -200,8 +200,45 @@ class OrderText(pygame.sprite.Sprite):
 		self.image = self.myFont.render(message, 1, self.color)
 		self.screen.blit(self.current_item_image,self.item_rect)
 
+class JumpScare(pygame.sprite.Sprite):
+	"""docstring for JumpScare"""
+	def __init__(self,display):
+		super().__init__()
+		self.display = display
+
+		self.bg = pygame.image.load("./assets/foods/Nothing.png").convert_alpha()
+
+		self.image = pygame.image.load("./assets/scare.png").convert_alpha()
+		self.original_image = self.image
+		self.image = pygame.transform.scale(self.original_image, (0, 0))
+		self.rect = self.image.get_rect()
+		self.rect.center = (640,360)
+
+		self.scalar = 0.1
+
+		self.height =0
+		self.width = 0
 
 
+	def update(self):
+		self.display.blit(self.bg,(0,0,1280,720))
+		# if is_alive==0:
+		# 	self.kill()
+		if self.height<=800:
+			self.width+=1280*self.scalar
+			self.height+=720*self.scalar
+		# elif self.height>=800:
+		# 	pass
+
+		self.image = pygame.transform.scale(self.original_image, (int(self.width),int(self.height)))
+		self.rect = self.image.get_rect(center = (640,360))
+		# self.display.blit(self.image,self.rect)
+	def kill_now(self):
+		if self.height>=800:
+			self.kill()
+			
+
+	
 # def calc_order_name(order):
 # 	order_string = []
 
@@ -310,11 +347,16 @@ pot = pygame.image.load("./assets/pot.png").convert_alpha()
 pot = pygame.transform.scale(pot,(200,200))
 pot_rect = pot.get_rect()
 
+
+
 RedBeans = KitchenThings("./assets/red_beans.png",(150,150),screen,'beans',200,200)
 Sugar = KitchenThings("./assets/sugar.png",(150,400),screen,'sugar',200,200)
 Water = KitchenThings("./assets/water.png",(800,590),screen,'water',325,195)
 Heat = KitchenThings("./assets/heat.png",(1150,650),screen,'heat',213,114)
 CustomerTest = Customer(screen)
+MyJump = JumpScare(screen)
+MyJump_group = pygame.sprite.Group()
+MyJump_group.add(MyJump)
 
 particle1 = ParticlePrinciple()
 PARTICLE_EVENT = pygame.USEREVENT + 1
@@ -387,7 +429,8 @@ order_correct = False
 side_bar_color = 'black'
 customer_status = 0
 SCORE = 0
-
+FAIL_COUNT=0
+can_jump = False
 
 
 
@@ -451,9 +494,12 @@ while not done:
 	ScoreText_group.draw(screen)
 
 	finished_dish1.set_alpha(alph)
+
 	screen.blit(finished_dish1,(0,0))
 
 	particle1.emit()
+
+
 
 	if bean_counter =='beans':
 		my_order[0]+=1
@@ -489,7 +535,18 @@ while not done:
 		customer_status = 2
 		order_correct=False
 		my_order = [0,0,0,0]
+		FAIL_COUNT+=1
 		# print('reset order')
+
+	if FAIL_COUNT>=3:
+		can_jump=True
+		FAIL_COUNT=0
+	if can_jump==True:
+		MyJump_group.update()
+		MyJump_group.draw(screen)
+		MyJump.kill_now()
+
+		
 
 	if show_beans==True and fading==False:
 		fading=False
