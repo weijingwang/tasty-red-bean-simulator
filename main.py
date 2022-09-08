@@ -176,6 +176,92 @@ class Customer(pygame.sprite.Sprite):
 
 
 
+# def calc_order_name(order):
+# 	order_string = []
+
+
+# 	if order[0]!=0 and order[1]!=0 and order[2]!=0 and order[3]!=0:
+# 		order_string.append('red bean soup')
+# 	elif order == [0,0,0,0]:
+# 		order_string.append('hey guys')
+
+# 	if order[3]!=0:
+# 		order_string.append('hot')
+# 	if order[1]!=0:
+# 		order_string.append('sweet')
+# 	if order[0]!=0:
+# 		order_string.append('bean')
+# 	if order[2]!=0:
+# 		order_string.append('water')
+
+
+# 	if order[0]==1:
+# 		order_string.append('less beans')
+# 	elif order[0]==3:
+# 		order_string.append('extra beans')
+
+# 	if order[1]==1:
+# 		order_string.append('less sugar')
+# 	elif order[1]==3:
+# 		order_string.append('extra sugar')
+
+# 	if order[2]==1:
+# 		order_string.append('less water')
+# 	elif order[2]==3:
+# 		order_string.append('extra water')
+
+# 	if order[3]==1:
+# 		order_string.append('less hot')
+# 	elif order[3]==3:
+# 		order_string.append('extra hot')
+
+
+# 	print(order_string)
+
+
+
+#beans,sugar,water,heat
+# menu = [Red_Bean_Soup,	Beans_Cup,	Sugar_Cup,	Sugar_Water,	Water_Cup,	Nothing]
+def order_image(order):
+	if order[0]!=0 and order[1]!=0 and order[2]!=0:
+		print('red bean soup')
+		return 0
+	if order[0]!=0 and order[1]==0 and order[2]!=0:
+		print('red bean soup (no sugar)')
+		return 0
+
+	if order[0]!=0 and order[1]==0 and order[2]==0:
+		print('bean cup')
+		return 1
+	if order[0]!=0 and order[1]!=0 and order[2]==0:
+		print('bean cup (w/ sugar)')
+		return 1
+
+	if order[0]==0 and order[1]!=0 and order[2]==0:
+		print('sugar cup')
+		return 2
+		
+	if order[0]==0 and order[1]!=0 and order[2]!=0:
+		print('sugar water')
+		return 3
+
+
+	if order[0]==0 and order[1]==0 and order[2]!=0:
+		print('water cup')
+		return 4
+
+
+	if order[0]==0 and order[1]==0 and order[2]==0:
+		print('Nothing')
+		return 5
+
+
+
+
+
+
+
+
 
 
 RedBeans = KitchenThings("./assets/red_beans.png",(150,150),screen,'beans',200,200)
@@ -193,7 +279,9 @@ customer_order = [
 	random.randint(0, 3),
 	random.randint(0, 3)
 ]
+# calc_order_name(customer_order)
 #beans,sugar,water,heat
+
 
 order_correct = False
 
@@ -210,8 +298,18 @@ customer_status = 0
 
 
 #FADERS=======
+Red_Bean_Soup = "./assets/foods/Red_Bean_Soup.png"
+Beans_Cup = "./assets/foods/Beans_Cup.png"
+Sugar_Cup = "./assets/foods/Sugar_Cup.png"
+Sugar_Water = "./assets/foods/Sugar_Water.png"
+Water_Cup= "./assets/foods/Water_Cup.png"
+Nothing ="./assets/foods/Nothing.png"
 
-finished_dish1 = pygame.image.load("./assets/Red_Bean_Soup.png").convert_alpha()
+menu = [Red_Bean_Soup,Beans_Cup,Sugar_Cup,Sugar_Water,Water_Cup,Nothing]
+
+current_dish = order_image(customer_order)
+
+finished_dish1 = pygame.image.load(menu[current_dish]).convert_alpha()
 finished_dish1.set_alpha(0)
 alph = 0
 fading = False
@@ -309,7 +407,10 @@ while not done:
 			random.randint(0, 3),
 			random.randint(0, 3)
 		]
+		# calc_order_name(customer_order)
+		current_dish = order_image(customer_order)
 
+		finished_dish1 = pygame.image.load(menu[current_dish]).convert_alpha()
 
 
 	if sum(my_order) > sum(customer_order):
@@ -336,6 +437,8 @@ while not done:
 	# print(alph)
 
 	# print(my_order)
+
+
 
 	particle1.emit()
 	clock.tick(30)
