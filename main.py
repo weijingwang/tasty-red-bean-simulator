@@ -53,7 +53,7 @@ def order_image(order):
 		print(order)
 		print('Nothing')
 		return 5
-		
+
 class ParticlePrinciple:
 	def __init__(self):
 		self.particles = []
@@ -290,7 +290,7 @@ class JumpScare(pygame.sprite.Sprite):
 			self.width = 0
 			return True
 
-class MainGame(object):
+class MainGame(pygame.sprite.Sprite):
 	"""docstring for MainGame"""
 	def __init__(self, display):
 		super().__init__()
@@ -470,7 +470,7 @@ class MainGame(object):
 			self.show_beans = True
 			self.my_order = [0,0,0,0]
 			self.SCORE +=1
-			print('score is '+str(self.SCORE))
+			# print('score is '+str(self.SCORE))
 			self.customer_order = [
 				random.randint(0, 3),
 				random.randint(0, 3),
@@ -492,8 +492,8 @@ class MainGame(object):
 			self.FAIL_COUNT=0
 			pygame.mixer.Sound.play(self.ANGER)
 
-		if self.SCORE>=3:
-			self.do_boss=True
+		# if self.SCORE>=3:
+		# 	self.do_boss=True
 
 		if self.can_jump==True:
 			self.MyJump_group.update(self.can_jump)
@@ -525,12 +525,27 @@ class MainGame(object):
 				quit()
 			if event.type == self.PARTICLE_EVENT:
 				self.particle1.add_particles()
+	def ScoreReturn(self):
+		# print(self.SCORE)
+		return self.SCORE
+
 
 
 MyGame = MainGame(screen)
 while not done:
+	myscore = MyGame.ScoreReturn()
+
+
+
+
+
 	MyGame.CheckInput()
 	MyGame.Initialize()
 	MyGame.draw()
 	MyGame.Update()
+	if myscore>=3:
+		print(myscore)
+		done=True
+
+
 	
