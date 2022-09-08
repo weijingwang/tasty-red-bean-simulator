@@ -252,13 +252,13 @@ class OrderText(pygame.sprite.Sprite):
 
 class JumpScare(pygame.sprite.Sprite):
 	"""docstring for JumpScare"""
-	def __init__(self,display):
+	def __init__(self,image_link,display):
 		super().__init__()
 		self.display = display
 
 		self.bg = pygame.image.load("./assets/foods/Nothing.png").convert_alpha()
-
-		self.image = pygame.image.load("./assets/scare.png").convert_alpha()
+		self.image_link = image_link
+		self.image = pygame.image.load(self.image_link).convert_alpha()
 		self.original_image = self.image
 		self.image = pygame.transform.scale(self.original_image, (0, 0))
 		self.rect = self.image.get_rect()
@@ -313,7 +313,7 @@ class MainGame(pygame.sprite.Sprite):
 		self.Water = KitchenThings("./assets/water.png",(800,590),self.display,'water',325,195)
 		self.Heat = KitchenThings("./assets/heat.png",(1150,650),self.display,'heat',213,114)
 		self.CustomerTest = Customer(self.display)
-		self.MyJump = JumpScare(self.display)
+		self.MyJump = JumpScare("./assets/scare.png",self.display)
 		self.MyJump_group = pygame.sprite.Group()
 		self.MyJump_group.add(self.MyJump)
 
@@ -530,14 +530,26 @@ class MainGame(pygame.sprite.Sprite):
 		return self.SCORE
 
 
+class TitleImage(pygame.sprite.Sprite):
+	"""docstring for TitleImage"""
+	def __init__(self, size,screen):
+		super().__init__()
+		self.size = size
+		self.screen = screen
+		
+
+
+
+# title_done = False
+# while not title_done:
+
+
+
+
 
 MyGame = MainGame(screen)
 while not done:
 	myscore = MyGame.ScoreReturn()
-
-
-
-
 
 	MyGame.CheckInput()
 	MyGame.Initialize()
