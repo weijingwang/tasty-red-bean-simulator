@@ -76,7 +76,7 @@ class Text(pygame.sprite.Sprite):
         elif on==False:
             self.color = (70,67,78)
         if self.bottom == True:
-            self.color = (100,97,108)
+            self.color = (250,200,200)
         self.image = self.myFont.render(self.message, 1, self.color)
 
 
@@ -580,16 +580,18 @@ class SlideShow(object):
 		super().__init__()
 		self.screen = screen
 		self.title_text = Text(self.screen,"Tasty Red Bean Simulator",(1280/2,720-720/5-720/20),100,False)
+		# self.instruction_text = Text(self.screen,"press any button",(1280/2,720-720/15-720/30),50,True)
 		self.text_group = pygame.sprite.Group()
 		self.text_group.add(self.title_text)
+		# self.text_group.add(self.instruction_text)
 		self.images = [
 		pygame.image.load("./assets/title/title1.png").convert_alpha(),
 		pygame.image.load("./assets/title/nasa_mars.jpeg").convert_alpha(),
 		pygame.image.load("./assets/title/title2.png").convert_alpha(),
+		pygame.image.load("./assets/title/title5.png").convert_alpha(),
 		pygame.image.load("./assets/title/nasa_rover.jpeg").convert_alpha(),
 		pygame.image.load("./assets/title/title3a.png").convert_alpha(),
 		pygame.image.load("./assets/title/title4.png").convert_alpha(),
-		pygame.image.load("./assets/title/title5.png").convert_alpha()
 		]
 		self.index = 0
 		self.image = self.images[self.index]
