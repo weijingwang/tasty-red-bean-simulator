@@ -416,6 +416,8 @@ class MainGame(pygame.sprite.Sprite):
 		self.mouse_pos = pygame.mouse.get_pos()
 		self.mouse_press = pygame.mouse.get_pressed()[0]
 
+		self.count_before_jumpscare = random.randint(1,3)
+
 	def draw(self):
 		# print('draw')
 		if self.current_hour>=7 and self.current_hour<=11:
@@ -510,11 +512,12 @@ class MainGame(pygame.sprite.Sprite):
 			self.FAIL_COUNT+=1
 			# print('reset order')
 
-		if self.FAIL_COUNT>=3:
+		if self.FAIL_COUNT>=self.count_before_jumpscare:
+			self.count_before_jumpscare = random.randint(1, 3)
 			self.can_jump=True
 			self.FAIL_COUNT=0
 			pygame.mixer.Sound.play(self.ANGER)
-
+		print(self.count_before_jumpscare)
 		# if self.SCORE>=3:
 		# 	self.do_boss=True
 
