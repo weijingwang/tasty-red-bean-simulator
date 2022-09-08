@@ -4,6 +4,56 @@ from datetime import datetime
 pygame.mixer.pre_init()
 pygame.init()
 
+screen = pygame.display.set_mode((1280, 720))
+done = False
+
+pygame.mixer.music.load("./assets/music/red-planet_compress.ogg")
+pygame.mixer.music.play(-1,0.0)
+pygame.mixer.music.set_volume(0.5)
+
+#beans,sugar,water,heat
+# menu = [Red_Bean_Soup,	Beans_Cup,	Sugar_Cup,	Sugar_Water,	Water_Cup,	Nothing]
+def order_image(order):
+	if order[0]!=0 and order[1]!=0 and order[2]!=0:
+		print(order)
+		print('red bean soup')
+		return 0
+	if order[0]!=0 and order[1]==0 and order[2]!=0:
+		print(order)
+		print('red bean soup (no sugar)')
+		return 0
+
+	if order[0]!=0 and order[1]==0 and order[2]==0:
+		print(order)
+		print('bean cup')
+		return 1
+	if order[0]!=0 and order[1]!=0 and order[2]==0:
+		print(order)
+		print('bean cup (w/ sugar)')
+		return 1
+
+	if order[0]==0 and order[1]!=0 and order[2]==0:
+		print(order)
+		print('sugar cup')
+		return 2
+
+	if order[0]==0 and order[1]!=0 and order[2]!=0:
+		print(order)
+		print('sugar water')
+		return 3
+
+
+	if order[0]==0 and order[1]==0 and order[2]!=0:
+		print(order)
+		print('water cup')
+		return 4
+
+
+	if order[0]==0 and order[1]==0 and order[2]==0:
+		print(order)
+		print('Nothing')
+		return 5
+		
 class ParticlePrinciple:
 	def __init__(self):
 		self.particles = []
@@ -240,297 +290,247 @@ class JumpScare(pygame.sprite.Sprite):
 			self.width = 0
 			return True
 
+class MainGame(object):
+	"""docstring for MainGame"""
+	def __init__(self, display):
+		super().__init__()
+		self.clock = pygame.time.Clock()
+		self.display = display
+		#SOUND++++++++++++++++
+		self.ANGER = pygame.mixer.Sound("./assets/music/sound/ANGER.ogg")
+		self.OK_SOUND = pygame.mixer.Sound("./assets/music/sound/CLICK.ogg")
 
-#beans,sugar,water,heat
-# menu = [Red_Bean_Soup,	Beans_Cup,	Sugar_Cup,	Sugar_Water,	Water_Cup,	Nothing]
-def order_image(order):
-	if order[0]!=0 and order[1]!=0 and order[2]!=0:
-		print(order)
-		print('red bean soup')
-		return 0
-	if order[0]!=0 and order[1]==0 and order[2]!=0:
-		print(order)
-		print('red bean soup (no sugar)')
-		return 0
+		self.current_hour = int(datetime.now().strftime("%H"))
 
-	if order[0]!=0 and order[1]==0 and order[2]==0:
-		print(order)
-		print('bean cup')
-		return 1
-	if order[0]!=0 and order[1]!=0 and order[2]==0:
-		print(order)
-		print('bean cup (w/ sugar)')
-		return 1
+		self.bg = pygame.image.load("./assets/bg.png").convert_alpha()
+		self.bg = pygame.transform.scale(self.bg,(960,720))
+		self.pot = pygame.image.load("./assets/pot.png").convert_alpha()
+		self.pot = pygame.transform.scale(self.pot,(200,200))
+		self.pot_rect = self.pot.get_rect()
 
-	if order[0]==0 and order[1]!=0 and order[2]==0:
-		print(order)
-		print('sugar cup')
-		return 2
+		self.RedBeans = KitchenThings("./assets/red_beans.png",(150,150),self.display,'beans',200,200)
+		self.Sugar = KitchenThings("./assets/sugar.png",(150,400),self.display,'sugar',200,200)
+		self.Water = KitchenThings("./assets/water.png",(800,590),self.display,'water',325,195)
+		self.Heat = KitchenThings("./assets/heat.png",(1150,650),self.display,'heat',213,114)
+		self.CustomerTest = Customer(self.display)
+		self.MyJump = JumpScare(self.display)
+		self.MyJump_group = pygame.sprite.Group()
+		self.MyJump_group.add(self.MyJump)
 
-	if order[0]==0 and order[1]!=0 and order[2]!=0:
-		print(order)
-		print('sugar water')
-		return 3
+		self.particle1 = ParticlePrinciple()
+		self.PARTICLE_EVENT = pygame.USEREVENT + 1
+		pygame.time.set_timer(self.PARTICLE_EVENT,40)
 
+		#TEXT----------------------
+		self.OrderText1 = OrderText(self.display, (530,100),40,(400,100))
+		self.OrderText2 = OrderText(self.display, (530,170),40,(400,170))
+		self.OrderText3 = OrderText(self.display, (530,240),40,(400,240))
+		self.OrderText4 = OrderText(self.display, (530,330),40,(400,330))
 
-	if order[0]==0 and order[1]==0 and order[2]!=0:
-		print(order)
-		print('water cup')
-		return 4
+		self.order_text_group1 = pygame.sprite.Group()
+		self.order_text_group2 = pygame.sprite.Group()
+		self.order_text_group3 = pygame.sprite.Group()
+		self.order_text_group4 = pygame.sprite.Group()
 
+		self.order_text_group1.add(self.OrderText1)
+		self.order_text_group2.add(self.OrderText2)
+		self.order_text_group3.add(self.OrderText3)
+		self.order_text_group4.add(self.OrderText4)
 
-	if order[0]==0 and order[1]==0 and order[2]==0:
-		print(order)
-		print('Nothing')
-		return 5
+		self.ScoreText = realText(self.display,(1070,50),30)
+		self.ScoreText_group=pygame.sprite.Group()
+		self.ScoreText_group.add(self.ScoreText)
+		#------------------------
 
-
-
-
-pygame.mixer.music.load("./assets/music/red-planet_compress.ogg")
-pygame.mixer.music.play(-1,0.0)
-pygame.mixer.music.set_volume(0.5)
-#SOUND++++++++++++++++
-ANGER = pygame.mixer.Sound("./assets/music/sound/ANGER.ogg")
-OK_SOUND = pygame.mixer.Sound("./assets/music/sound/CLICK.ogg")
-
-
-current_hour = int(datetime.now().strftime("%H"))
-screen = pygame.display.set_mode((1280, 720))
-clock = pygame.time.Clock()
-
-bg = pygame.image.load("./assets/bg.png").convert_alpha()
-bg = pygame.transform.scale(bg,(960,720))
-pot = pygame.image.load("./assets/pot.png").convert_alpha()
-pot = pygame.transform.scale(pot,(200,200))
-pot_rect = pot.get_rect()
-
-
-
-RedBeans = KitchenThings("./assets/red_beans.png",(150,150),screen,'beans',200,200)
-Sugar = KitchenThings("./assets/sugar.png",(150,400),screen,'sugar',200,200)
-Water = KitchenThings("./assets/water.png",(800,590),screen,'water',325,195)
-Heat = KitchenThings("./assets/heat.png",(1150,650),screen,'heat',213,114)
-CustomerTest = Customer(screen)
-MyJump = JumpScare(screen)
-MyJump_group = pygame.sprite.Group()
-MyJump_group.add(MyJump)
-
-particle1 = ParticlePrinciple()
-PARTICLE_EVENT = pygame.USEREVENT + 1
-pygame.time.set_timer(PARTICLE_EVENT,40)
-
-#TEXT----------------------
-OrderText1 = OrderText(screen, (530,100),40,(400,100))
-OrderText2 = OrderText(screen, (530,170),40,(400,170))
-OrderText3 = OrderText(screen, (530,240),40,(400,240))
-OrderText4 = OrderText(screen, (530,330),40,(400,330))
-
-order_text_group1 = pygame.sprite.Group()
-order_text_group2 = pygame.sprite.Group()
-order_text_group3 = pygame.sprite.Group()
-order_text_group4 = pygame.sprite.Group()
-
-order_text_group1.add(OrderText1)
-order_text_group2.add(OrderText2)
-order_text_group3.add(OrderText3)
-order_text_group4.add(OrderText4)
-
-ScoreText = realText(screen,(1070,50),30)
-ScoreText_group=pygame.sprite.Group()
-ScoreText_group.add(ScoreText)
-#------------------------
-
-
-#ORDER$$$$$$$$$$$$$$$
-my_order = [0,0,0,0]
-customer_order = [
-	random.randint(0, 3),
-	random.randint(0, 3),
-	random.randint(0, 3),
-	random.randint(0, 3)
-]
-
-customer_order_counting = [
-customer_order[0]-my_order[0],
-customer_order[1]-my_order[1],
-customer_order[2]-my_order[2],
-customer_order[3]-my_order[3],
-]
-#$$$$$$$$$$$$$$$$$
-
-#FADERS=======
-Red_Bean_Soup = "./assets/foods/Red_Bean_Soup.png"
-Beans_Cup = "./assets/foods/Beans_Cup.png"
-Sugar_Cup = "./assets/foods/Sugar_Cup.png"
-Sugar_Water = "./assets/foods/Sugar_Water.png"
-Water_Cup= "./assets/foods/Water_Cup.png"
-Nothing ="./assets/foods/Nothing.png"
-
-menu = [Red_Bean_Soup,Beans_Cup,Sugar_Cup,Sugar_Water,Water_Cup,Nothing]
-
-current_dish = order_image(customer_order)
-
-finished_dish1 = pygame.image.load(menu[current_dish]).convert_alpha()
-finished_dish1.set_alpha(0)
-alph = 0
-fading = False
-show_beans=False
-#============
-
-# calc_order_name(customer_order)
-#beans,sugar,water,heat
-
-
-done = False
-order_correct = False
-side_bar_color = 'black'
-customer_status = 0
-SCORE = 0
-FAIL_COUNT=0
-can_jump = False
-do_boss = False
-
-
-
-
-while not done:
-
-	for event in pygame.event.get():
-		if event.type == pygame.QUIT:
-			quit()
-		if event.type == PARTICLE_EVENT:
-			particle1.add_particles()
-
-	mouse_pos = pygame.mouse.get_pos()
-	mouse_press = pygame.mouse.get_pressed()[0]
-
-	customer_order_counting = [
-		customer_order[0]-my_order[0],
-		customer_order[1]-my_order[1],
-		customer_order[2]-my_order[2],
-		customer_order[3]-my_order[3],
-	]
-
-
-	if current_hour>=7 and current_hour<=11:
-		screen.fill((215,232,253))
-		side_bar_color= (111,153,64)
-
-	elif current_hour>=12 and current_hour<=17:
-		screen.fill((170,196,201))
-		side_bar_color = (99,119,91)
-	else:
-		screen.fill((48,64,90))
-		side_bar_color=(115,112,0)
-
-	screen.blit(bg,(320,0))
-	pygame.draw.rect(screen, side_bar_color, pygame.Rect(0, 0, 320, 720))
-	bean_counter = RedBeans.Draw(mouse_press,mouse_pos)
-	sugar_counter = Sugar.Draw(mouse_press,mouse_pos)
-
-	order_text_group1.update(str(customer_order_counting[0]),0)
-	order_text_group1.draw(screen)
-	order_text_group2.update(str(customer_order_counting[1]),1)
-	order_text_group2.draw(screen)
-	order_text_group3.update(str(customer_order_counting[2]),2)
-	order_text_group3.draw(screen)
-	order_text_group4.update(str(customer_order_counting[3]),3)
-	order_text_group4.draw(screen)
-
-	if do_boss == False:
-		CustomerTest.Render()
-		customer_status_output = CustomerTest.Move(customer_status,order_correct)
-		customer_status = customer_status_output
-		CustomerTest.Update()
-
-	pygame.draw.rect(screen, (170,135,54), pygame.Rect(0, 570, 1280, 150))
-
-	water_counter = Water.Draw(mouse_press,mouse_pos)
-	heat_counter = Heat.Draw(mouse_press,mouse_pos)
-	screen.blit(pot,(300,500))
-
-	if do_boss==False:
-		ScoreText_group.update('Happy Customers: '+str(SCORE))
-		ScoreText_group.draw(screen)
-
-	finished_dish1.set_alpha(alph)
-
-	screen.blit(finished_dish1,(0,0))
-
-	particle1.emit()
-
-
-
-	if bean_counter =='beans':
-		my_order[0]+=1
-	elif sugar_counter =='sugar':
-		my_order[1]+=1
-	elif water_counter =='water':
-		my_order[2]+=1
-	elif heat_counter =='heat':
-		my_order[3]+=1
-
-
-	if my_order == customer_order:
-		current_dish = order_image(customer_order)
-		finished_dish1 = pygame.image.load(menu[current_dish]).convert_alpha()
-
-		pygame.mixer.Sound.play(OK_SOUND)
-		order_correct=True
-		customer_status = 2
-		show_beans = True
-		my_order = [0,0,0,0]
-		SCORE +=1
-		print('score is '+str(SCORE))
-		customer_order = [
+		#ORDER$$$$$$$$$$$$$$$
+		self.my_order = [0,0,0,0]
+		self.customer_order = [
 			random.randint(0, 3),
 			random.randint(0, 3),
 			random.randint(0, 3),
 			random.randint(0, 3)
 		]
-		print(customer_order)
 
-	if sum(my_order) > sum(customer_order):
-		pygame.mixer.Sound.play(ANGER)
-		customer_status = 2
-		order_correct=False
-		my_order = [0,0,0,0]
-		FAIL_COUNT+=1
-		# print('reset order')
+		self.customer_order_counting = [
+		self.customer_order[0]-self.my_order[0],
+		self.customer_order[1]-self.my_order[1],
+		self.customer_order[2]-self.my_order[2],
+		self.customer_order[3]-self.my_order[3],
+		]
+		#$$$$$$$$$$$$$$$$$
 
-	if FAIL_COUNT>=3:
-		can_jump=True
-		FAIL_COUNT=0
-		pygame.mixer.Sound.play(ANGER)
+		#FADERS=======
+		self.Red_Bean_Soup = "./assets/foods/Red_Bean_Soup.png"
+		self.Beans_Cup = "./assets/foods/Beans_Cup.png"
+		self.Sugar_Cup = "./assets/foods/Sugar_Cup.png"
+		self.Sugar_Water = "./assets/foods/Sugar_Water.png"
+		self.Water_Cup= "./assets/foods/Water_Cup.png"
+		self.Nothing ="./assets/foods/Nothing.png"
 
-	if SCORE>=3:
-		do_boss=True
+		self.menu = [self.Red_Bean_Soup,self.Beans_Cup,self.Sugar_Cup,self.Sugar_Water,self.Water_Cup,self.Nothing]
 
-	if can_jump==True:
+		self.current_dish = order_image(self.customer_order)
 
-		MyJump_group.update(can_jump)
-		MyJump_group.draw(screen)
-		done_jump = MyJump.kill_now()
-		if done_jump==True:
-			can_jump=False
+		self.finished_dish1 = pygame.image.load(self.menu[self.current_dish]).convert_alpha()
+		self.finished_dish1.set_alpha(0)
+		self.alph = 0
+		self.fading = False
+		self.show_beans=False
+		#============
 
-		
+		# calc_order_name(customer_order)
+		#beans,sugar,water,heat
 
-	if show_beans==True and fading==False:
-		fading=False
-		# print('coming')
-		if alph <= 500:
-			alph+=40
-		if alph >=500:
-			fading = True
-			# print('false')
-			show_beans=False
-	if fading==True:
-		# print('fading')
-		alph-=40
-		if alph<=0:
-			fading =False
+		self.order_correct = False
+		self.side_bar_color = 'black'
+		self.customer_status = 0
+		self.SCORE = 0
+		self.FAIL_COUNT=0
+		self.can_jump = False
+		self.do_boss = False
+		self.mouse_pos = pygame.mouse.get_pos()
+		self.mouse_press = pygame.mouse.get_pressed()[0]
+
+	def draw(self):
+		# print('draw')
+		if self.current_hour>=7 and self.current_hour<=11:
+			self.display.fill((215,232,253))
+			self.side_bar_color= (111,153,64)
+
+		elif self.current_hour>=12 and self.current_hour<=17:
+			self.display.fill((170,196,201))
+			self.side_bar_color = (99,119,91)
+		else:
+			self.display.fill((48,64,90))
+			self.side_bar_color=(115,112,0)
+
+		self.display.blit(self.bg,(320,0))
+		pygame.draw.rect(self.display, self.side_bar_color, pygame.Rect(0, 0, 320, 720))
+		self.bean_counter = self.RedBeans.Draw(self.mouse_press,self.mouse_pos)
+		self.sugar_counter = self.Sugar.Draw(self.mouse_press,self.mouse_pos)
+		self.order_text_group1.update(str(self.customer_order_counting[0]),0)
+		self.order_text_group2.update(str(self.customer_order_counting[1]),1)
+		self.order_text_group3.update(str(self.customer_order_counting[2]),2)
+		self.order_text_group4.update(str(self.customer_order_counting[3]),3)
+		self.order_text_group1.draw(self.display)
+		self.order_text_group2.draw(self.display)
+		self.order_text_group3.draw(self.display)
+		self.order_text_group4.draw(self.display)
+
+		if self.do_boss == False:
+			self.CustomerTest.Render()
+			self.customer_status_output = self.CustomerTest.Move(self.customer_status,self.order_correct)
+			self.customer_status = self.customer_status_output
+			self.CustomerTest.Update()
+
+		pygame.draw.rect(self.display, (170,135,54), pygame.Rect(0, 570, 1280, 150))
+
+		self.water_counter = self.Water.Draw(self.mouse_press,self.mouse_pos)
+		self.heat_counter = self.Heat.Draw(self.mouse_press,self.mouse_pos)
+		self.display.blit(self.pot,(300,500))
+
+		if self.do_boss==False:
+			self.ScoreText_group.update('Happy Customers: '+str(self.SCORE))
+			self.ScoreText_group.draw(self.display)
+
+		self.finished_dish1.set_alpha(self.alph)
+		self.display.blit(self.finished_dish1,(0,0))
+		self.particle1.emit()
+
+	def Initialize(self):
+		# print('init')
+		self.mouse_pos = pygame.mouse.get_pos()
+		self.mouse_press = pygame.mouse.get_pressed()[0]
+
+		self.customer_order_counting = [
+		self.customer_order[0]-self.my_order[0],
+		self.customer_order[1]-self.my_order[1],
+		self.customer_order[2]-self.my_order[2],
+		self.customer_order[3]-self.my_order[3],
+		]
+	def Update(self):
+		# print('update')
+		if self.bean_counter =='beans':
+			self.my_order[0]+=1
+		elif self.sugar_counter =='sugar':
+			self.my_order[1]+=1
+		elif self.water_counter =='water':
+			self.my_order[2]+=1
+		elif self.heat_counter =='heat':
+			self.my_order[3]+=1
+
+
+		if self.my_order == self.customer_order:
+			self.current_dish = order_image(self.customer_order)
+			self.finished_dish1 = pygame.image.load(self.menu[self.current_dish]).convert_alpha()
+
+			pygame.mixer.Sound.play(self.OK_SOUND)
+			self.order_correct=True
+			self.customer_status = 2
+			self.show_beans = True
+			self.my_order = [0,0,0,0]
+			self.SCORE +=1
+			print('score is '+str(self.SCORE))
+			self.customer_order = [
+				random.randint(0, 3),
+				random.randint(0, 3),
+				random.randint(0, 3),
+				random.randint(0, 3)
+			]
+			print(self.customer_order)
+
+		if sum(self.my_order) > sum(self.customer_order):
+			pygame.mixer.Sound.play(self.ANGER)
+			self.customer_status = 2
+			self.order_correct=False
+			self.my_order = [0,0,0,0]
+			self.FAIL_COUNT+=1
+			# print('reset order')
+
+		if self.FAIL_COUNT>=3:
+			self.can_jump=True
+			self.FAIL_COUNT=0
+			pygame.mixer.Sound.play(self.ANGER)
+
+		if self.SCORE>=3:
+			self.do_boss=True
+
+		if self.can_jump==True:
+			self.MyJump_group.update(self.can_jump)
+			self.MyJump_group.draw(self.display)
+			self.done_jump = self.MyJump.kill_now()
+			if self.done_jump==True:
+				self.can_jump=False
+
+		if self.show_beans==True and self.fading==False:
+			self.fading=False
+			# print('coming')
+			if self.alph <= 500:
+				self.alph+=40
+			if self.alph >=500:
+				self.fading = True
+				# print('false')
+				self.show_beans=False
+		if self.fading==True:
+			# print('fading')
+			self.alph-=40
+			if self.alph<=0:
+				self.fading =False
+		self.clock.tick(30)
+		pygame.display.flip()
+	def CheckInput(self):
+		# print('check input')
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				quit()
+			if event.type == self.PARTICLE_EVENT:
+				self.particle1.add_particles()
+
+
+MyGame = MainGame(screen)
+while not done:
+	MyGame.CheckInput()
+	MyGame.Initialize()
+	MyGame.draw()
+	MyGame.Update()
 	
-	clock.tick(30)
-	pygame.display.flip()
