@@ -6,6 +6,7 @@ pygame.init()
 
 screen = pygame.display.set_mode((1280, 720))
 done = False
+clock = pygame.time.Clock()
 
 pygame.mixer.music.load("./assets/music/red-planet_compress.ogg")
 pygame.mixer.music.play(-1,0.0)
@@ -294,7 +295,6 @@ class MainGame(pygame.sprite.Sprite):
 	"""docstring for MainGame"""
 	def __init__(self, display):
 		super().__init__()
-		self.clock = pygame.time.Clock()
 		self.display = display
 		#SOUND++++++++++++++++
 		self.ANGER = pygame.mixer.Sound("./assets/music/sound/ANGER.ogg")
@@ -458,8 +458,6 @@ class MainGame(pygame.sprite.Sprite):
 			self.my_order[2]+=1
 		elif self.heat_counter =='heat':
 			self.my_order[3]+=1
-
-
 		if self.my_order == self.customer_order:
 			self.current_dish = order_image(self.customer_order)
 			self.finished_dish1 = pygame.image.load(self.menu[self.current_dish]).convert_alpha()
@@ -516,8 +514,7 @@ class MainGame(pygame.sprite.Sprite):
 			self.alph-=40
 			if self.alph<=0:
 				self.fading =False
-		self.clock.tick(30)
-		pygame.display.flip()
+
 	def CheckInput(self):
 		# print('check input')
 		for event in pygame.event.get():
@@ -529,6 +526,28 @@ class MainGame(pygame.sprite.Sprite):
 		# print(self.SCORE)
 		return self.SCORE
 
+class ScaleSprite(pygame.sprite.Sprite):
+	def __init__(self, center, image_link,size):
+		super().__init__()
+		self.image_link = image_link		
+		self.original_image = pygame.image.load(self.image_link).convert_alpha()
+		self.image = self.original_image
+		self.rect = self.image.get_rect(center = center)
+		self.grow = 0
+		self.speed = 100
+		self.size=size
+		self.size_x = self.size[0]
+		self.size_y = self.size[1]
+	def update(self):
+		if self.grow > 1000:
+			self.grow=1000
+		self.grow += self.speed
+
+		orig_x, orig_y = self.original_image.get_size()
+		self.size_x = orig_x + round(self.grow)
+		self.size_y = orig_y + round(self.grow)
+		self.image = pygame.transform.scale(self.original_image, (self.size_x, self.size_y))
+		self.rect = self.image.get_rect(center = self.rect.center)
 
 class Title(object):
 	"""docstring for TitleImage"""
@@ -543,23 +562,37 @@ class Title(object):
 		self.Title4 = JumpScare("./assets/title/title4.png",self.screen)
 		self.Title5 = JumpScare("./assets/title/title5.png",self.screen)
 
+	def Draw(self):
+		print('draw')
+		self.Title1.update(True)
 
 
+# TitleTest = Title(0,screen)
+# MyGame = MainGame(screen)
 
-TitleTest = Title(0,screen)
+sprite = ScaleSprite(screen.get_rect().center, "./assets/title/title4.png",(0,0))
+group = pygame.sprite.Group(sprite)
 
-MyGame = MainGame(screen)
 while not done:
 
-	myscore = MyGame.ScoreReturn()
+	clock.tick(30)
 
-	MyGame.CheckInput()
-	MyGame.Initialize()
-	MyGame.draw()
-	MyGame.Update()
-	if myscore>=3:
-		print(myscore)
-		done=True
+	# myscore = MyGame.ScoreReturn()
+
+	# MyGame.CheckInput()
+	# MyGame.Initialize()
+	# # MyGame.draw()
+	# # MyGame.Update()
+	# if myscore>=3:
+	# 	print(myscore)
+	# 	done=True
+	group.update()
+	screen.fill(0)
+	group.draw(screen)
+	
+
+	pygame.display.flip()
+
 
 
 	
