@@ -633,15 +633,16 @@ class MainGame(pygame.sprite.Sprite):
 			pygame.draw.rect(self.display, (255,14,23), pygame.Rect(900, 25, 300, 10))
 			pygame.draw.rect(self.display, (17,255,18), pygame.Rect(900, 25, (self.SCORE/self.total_turns)*300, 10))
 
-		self.finished_dish1.set_alpha(self.alph)
-		self.display.blit(self.finished_dish1,(0,0))
-		self.particle1.emit()
+
 		if self.isboss==False:
 			pygame.draw.rect(self.display, (95,93,92), pygame.Rect(50, 25, 500, 5))
 			pygame.draw.rect(self.display, self.hp_color, pygame.Rect(50, 25, self.patience_meter, 5))
 		elif self.isboss==True:
 			self.TestBoss.BossHP(self.display)
 			self.TestBoss.HPofBoss(self.display)
+		self.finished_dish1.set_alpha(self.alph)
+		self.display.blit(self.finished_dish1,(0,0))
+		self.particle1.emit()
 
 	def Initialize(self):
 		# print('init')
