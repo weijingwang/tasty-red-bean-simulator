@@ -106,6 +106,7 @@ class Boss(pygame.sprite.Sprite):
 		self.pos = [500,100]
 		self.rect.center = self.pos
 		self.accel = [128/1000, 72/1000]
+		self.jerk = [128/5000, 72/5000]
 		self.time = 60
 		self.speed=[(2489-128)/(30*self.time)/2,(1400-72)/(30*self.time)/2]#formula for 30 sec. divide to get bigger time
 		self.size = [128, 72]
@@ -115,8 +116,10 @@ class Boss(pygame.sprite.Sprite):
 		#hp
 		self.hp_color = (17,255,18)
 		self.patience_meter = (self.size[1]/self.max_height)*500
+
 	def update(self,knock_back):
 		if knock_back==True:
+			self.accel+=self.jerk
 			self.pos = [500,100]
 			self.speed=[(2489-128)/(30*self.time)/2,(1400-72)/(30*self.time)/2]#formula for 30 sec. divide to get bigger time
 			self.size = [128, 72]
