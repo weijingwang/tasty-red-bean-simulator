@@ -657,13 +657,14 @@ class ScaleSprite(pygame.sprite.Sprite):
 
 class SlideShow(object):
 	"""docstring for SlideShow"""
-	def __init__(self,screen,images):
+	def __init__(self,screen,images,isboss):
 		super().__init__()
+		self.isboss = isboss
 		self.screen = screen
-		self.title_text = Text(self.screen,"Tasty Red Bean Simulator",(1280/2,720-720/5-720/20),100,False)
-		# self.instruction_text = Text(self.screen,"press any button",(1280/2,720-720/15-720/30),50,True)
-		self.text_group = pygame.sprite.Group()
-		self.text_group.add(self.title_text)
+		if self.isboss==False:
+			self.title_text = Text(self.screen,"Tasty Red Bean Simulator",(1280/2,720-720/5-720/20),100,False)
+			self.text_group = pygame.sprite.Group()
+			self.text_group.add(self.title_text)
 		# self.text_group.add(self.instruction_text)
 		self.images = images
 		self.index = 0
@@ -672,6 +673,7 @@ class SlideShow(object):
 		self.alph = 10
 		self.image.set_alpha(self.alph)
 		self.mode = 1
+		self.stop = False
 	def draw(self):
 		self.screen.fill('black')
 		if self.alph >=400:
@@ -679,7 +681,10 @@ class SlideShow(object):
 		elif self.alph <=-0:
 			self.index+=1
 			if self.index>len(self.images)-1:
-				self.index=0
+				if isboss==True:
+					self.stop=True
+				else:
+					self.index=0
 			self.image = self.images[self.index]
 			self.mode=1
 
@@ -688,14 +693,12 @@ class SlideShow(object):
 
 
 		self.screen.blit(self.image,self.rect)
-
-		self.text_group.update(True)
-		self.text_group.draw(self.screen)
-
-
-		
-
-
+		if self.isboss==False:
+			self.text_group.update(True)
+			self.text_group.draw(self.screen)
+	def StopNow(self):
+		if self.stop == True:
+			return True
 class Title(object):
 	"""docstring for TitleImage"""
 	def __init__(self, size,screen):
@@ -734,15 +737,13 @@ pygame.image.load("./assets/boss/cut3.png").convert_alpha(),
 pygame.image.load("./assets/boss/cut4.png").convert_alpha()
 ]
 
-MySlides = SlideShow(screen,boss_slides)
+MySlides = SlideShow(screen,title_slides,False)
 title_done = False
 particle1=ParticlePrinciple()
 PARTICLE_EVENT = pygame.USEREVENT + 1
 pygame.time.set_timer(PARTICLE_EVENT,100)
 
-TestBoss = Boss()
-boss_group = pygame.sprite.Group()
-boss_group.add(TestBoss)
+
 while not title_done:
 	for event in pygame.event.get():
 		if event.type == PARTICLE_EVENT:
@@ -756,8 +757,7 @@ while not title_done:
 		title_done=True
 	MySlides.draw()
 	particle1.emit()
-	boss_group.update()
-	boss_group.draw(screen)
+
 	clock.tick(30)
 	pygame.display.flip()
 
@@ -774,23 +774,25 @@ while not done:
 	MyGame.Initialize()
 	MyGame.draw()
 	MyGame.Update()
-	if myscore>=3:
+	if myscore>=1:
 		print(myscore)
 		done=True
 	pygame.display.flip()
 
-cut_done = False
-BossCut = SlideShow(screen)
-while not cut_done:
+bosscut_done = False
+BossCut = SlideShow(screen,boss_slides,True)
+while not bosscut_done:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			quit()
-
-	MySlides.draw()
-
+	BossCut.draw()
+	if BossCut.StopNow()==True:
+		bosscut_done=True
 	clock.tick(30)
 	pygame.display.flip()
 
-
+TestBoss = Boss()
+boss_group = pygame.sprite.Group()
+boss_group.add(TestBoss)
 
 	
