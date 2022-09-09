@@ -178,7 +178,7 @@ class Boss(pygame.sprite.Sprite):
 		self.patience_meter = (self.size[1]/self.max_height)*500
 
 		#hp of boss
-		self.lives = 3
+		self.lives = 1
 		self.lives_image = pygame.image.load("./assets/heart.png")
 		self.lives_image=pygame.transform.scale(self.lives_image,(40,40))
 		self.lives_rect = self.lives_image.get_rect()
@@ -193,9 +193,12 @@ class Boss(pygame.sprite.Sprite):
 		self.can_jump = False
 		self.done_jump=False
 
+		self.lose = False
+
 	def update(self,knock_back):
 		if self.lives<=0:
-			quit()
+			self.lose = True
+
 		if knock_back==True:
 			self.accel[0]+=self.jerk[0]
 			self.accel[1]+=self.jerk[1]
@@ -269,6 +272,9 @@ class Boss(pygame.sprite.Sprite):
 			self.done_jump = self.MyJump.kill_now()
 			if self.done_jump==True:
 				self.can_jump=False
+
+	def checkIfYouDied(self):
+		return self.lose
 
 
 
@@ -629,7 +635,7 @@ class MainGame(pygame.sprite.Sprite):
 			self.ScoreText_group.update('Customers: '+str(self.SCORE))
 			self.ScoreText_group.draw(self.display)
 		elif self.isboss==True:
-			print(self.SCORE, self.total_turns)
+			# print(self.SCORE, self.total_turns)
 			pygame.draw.rect(self.display, (255,14,23), pygame.Rect(900, 25, 300, 10))
 			pygame.draw.rect(self.display, (17,255,18), pygame.Rect(900, 25, (self.SCORE/self.total_turns)*300, 10))
 
@@ -766,6 +772,8 @@ class MainGame(pygame.sprite.Sprite):
 	def ScoreReturn(self):
 		# print(self.SCORE)
 		return self.SCORE#
+	def Lose(self):
+		return self.TestBoss.checkIfYouDied()#True == LOSE!!!!
 
 class ScaleSprite(pygame.sprite.Sprite):
 	def __init__(self, center, image_link,size):
@@ -967,8 +975,16 @@ BossFight = MainGame(screen,True,10)
 # boss_group = pygame.sprite.Group()
 # boss_group.add(TestBoss)
 
+
+death = False
+
 while not bossfight_done:
 	clock.tick(30)
+
+	if BossFight.Lose() == True:
+		print('LOSE!!!!')
+		death = True
+		bossfight_done=True
 
 	myscore = BossFight.ScoreReturn()
 
@@ -987,5 +1003,34 @@ while not bossfight_done:
 		# # #print(myscore)
 		# bossfight_done=True
 	pygame.display.flip()
+
+
+class FadeToBlack(object):
+		"""docstring for FadeToBlack"""
+		def __init__(self, speed):
+			super(FadeToBlack, self).__init__()
+			self.speed = speed
+			self.alphaSurface = pygame.Surface((1280,720))
+			self.alphaSurface.fill('black')
+			self.alph = 0
+			self.alphaSurface.set_alpha(self.alph)
+		def Fade(self,screen):
+			if self.alph<=100:
+				self.alph += self.speed
+				self.alphaSurface.set_alpha(self.alph)
+				screen.blit(self.alphaSurface,(0,0))
+
+
+death_done = False
+DeathFade = FadeToBlack(0.1)
+if death==True:
+	pygame.mixer.music.fadeout(60000)
+	while not death_done:
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				quit()
+		clock.tick(30)
+		DeathFade.Fade(screen)
+		pygame.display.flip()
 
 	
