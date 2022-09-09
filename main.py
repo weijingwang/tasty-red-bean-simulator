@@ -15,43 +15,43 @@ pygame.mixer.music.set_volume(0.5)
 # menu = [Red_Bean_Soup,	Beans_Cup,	Sugar_Cup,	Sugar_Water,	Water_Cup,	Nothing]
 def order_image(order):
 	if order[0]!=0 and order[1]!=0 and order[2]!=0:
-		print(order)
-		print('red bean soup')
+		# #print(order)
+		# #print('red bean soup')
 		return 0
 	if order[0]!=0 and order[1]==0 and order[2]!=0:
-		print(order)
-		print('red bean soup (no sugar)')
+		# #print(order)
+		# #print('red bean soup (no sugar)')
 		return 0
 
 	if order[0]!=0 and order[1]==0 and order[2]==0:
-		print(order)
-		print('bean cup')
+		#print(order)
+		#print('bean cup')
 		return 1
 	if order[0]!=0 and order[1]!=0 and order[2]==0:
-		print(order)
-		print('bean cup (w/ sugar)')
+		#print(order)
+		#print('bean cup (w/ sugar)')
 		return 1
 
 	if order[0]==0 and order[1]!=0 and order[2]==0:
-		print(order)
-		print('sugar cup')
+		#print(order)
+		#print('sugar cup')
 		return 2
 
 	if order[0]==0 and order[1]!=0 and order[2]!=0:
-		print(order)
-		print('sugar water')
+		#print(order)
+		#print('sugar water')
 		return 3
 
 
 	if order[0]==0 and order[1]==0 and order[2]!=0:
-		print(order)
-		print('water cup')
+		#print(order)
+		#print('water cup')
 		return 4
 
 
 	if order[0]==0 and order[1]==0 and order[2]==0:
-		print(order)
-		print('Nothing')
+		#print(order)
+		#print('Nothing')
 		return 5
 
 class Text(pygame.sprite.Sprite):
@@ -105,25 +105,42 @@ class Boss(pygame.sprite.Sprite):
 		self.index = 0
 		self.image = self.images[self.index]
 		self.rect = self.image.get_rect()
-		self.rect.center = (1280/2,720/2)
-		self.accel = [1280/100000,720/100000]
-		self.speed=[1280/10000,720/10000]
+		self.pos = [640,360]
+		self.rect.center = self.pos
+		# self.accel = [0,0]
+		self.time = 60
+		self.speed=[(2489-128)/(30*self.time)/2,(1400-72)/(30*self.time)/2]#formula for 30 sec. divide to get bigger time
+		self.size = [128, 72]
+		self.rect.size = self.size
+		self.image = pygame.transform.scale(self.image, self.rect.size)
 
-		self.size = [1280/100,720/100]
 	def update(self):
+		if self.rect.height>=1400:
+			quit()
+		# print(self.rect,self.rect.center)
 		self.index += 1
 		if self.index >= len(self.images):
 			self.index = 0
 		self.image = self.images[self.index]
-		self.image = pygame.transform.scale(self.image, (self.size[0], self.size[1]))
-		self.size[0]+=self.speed[0]
-		self.size[1]+=self.speed[1]
-		self.speed[0]+=self.accel[0]
-		self.speed[1]+=self.accel[1]
 
 
-		self.rect = self.image.get_rect()
-		self.rect.center = (1280/2,720/2)
+		self.size = [self.size[0]+self.speed[0],self.size[1]+self.speed[1]]
+		self.rect.center = self.pos
+		self.rect.size = self.size
+		self.image = pygame.transform.scale(self.image, self.rect.size)
+		# self.rect.move_ip(self.speed[0]+10,self.speed[1]+10)
+		print(str(int(clock.get_fps())))
+
+
+		
+		# self.size[0]+=self.speed[0]
+		# self.size[1]+=self.speed[1]
+		# self.speed[0]+=self.accel[0]
+		# self.speed[1]+=self.accel[1]
+	
+
+	def draw(self,screen):
+		screen.blit(self.image,self.rect)
 		
 class ParticlePrinciple:
 	def __init__(self):
@@ -257,7 +274,7 @@ class Customer(pygame.sprite.Sprite):
 				# print('gfhjgh')
 				self.rect.bottomleft = 1280,720
 				self.bottomleft_comp = [1280,720]
-				return 0
+				return 0#
 
 class realText(pygame.sprite.Sprite):
     def __init__(self,screen,pos,size) -> None:
@@ -531,7 +548,7 @@ class MainGame(pygame.sprite.Sprite):
 		self.customer_order[3]-self.my_order[3],
 		]
 	def Update(self):
-		print(len(self.customer_order),self.patience_rate)
+		# print(len(self.customer_order),self.patience_rate)
 
 		if self.reset_patience==True:
 			self.patience_rate_increaser+=self.patience_rate_increment
@@ -630,7 +647,7 @@ class MainGame(pygame.sprite.Sprite):
 				self.particle1.add_particles()
 	def ScoreReturn(self):
 		# print(self.SCORE)
-		return self.SCORE
+		return self.SCORE#
 
 class ScaleSprite(pygame.sprite.Sprite):
 	def __init__(self, center, image_link,size):
@@ -681,7 +698,8 @@ class SlideShow(object):
 		elif self.alph <=-0:
 			self.index+=1
 			if self.index>len(self.images)-1:
-				if isboss==True:
+				if self.isboss==True:
+					self.index=self.index>len(self.images)-1
 					self.stop=True
 				else:
 					self.index=0
@@ -699,6 +717,7 @@ class SlideShow(object):
 	def StopNow(self):
 		if self.stop == True:
 			return True
+
 class Title(object):
 	"""docstring for TitleImage"""
 	def __init__(self, size,screen):
@@ -715,7 +734,7 @@ class Title(object):
 		self.mouse_press = pygame.mouse.get_pressed()[0]
 
 	def Draw(self):
-		print('draw')
+		#print('draw')
 		self.Title1.update(True)
 
 
@@ -733,8 +752,8 @@ pygame.image.load("./assets/title/title4.png").convert_alpha()
 boss_slides = [
 pygame.image.load("./assets/boss/cut1.png").convert_alpha(),
 pygame.image.load("./assets/boss/cut2.png").convert_alpha(),
-pygame.image.load("./assets/boss/cut3.png").convert_alpha(),
-pygame.image.load("./assets/boss/cut4.png").convert_alpha()
+pygame.image.load("./assets/boss/cut3.png").convert_alpha()
+# pygame.image.load("./assets/boss/cut4.png").convert_alpha()
 ]
 
 MySlides = SlideShow(screen,title_slides,False)
@@ -743,6 +762,9 @@ particle1=ParticlePrinciple()
 PARTICLE_EVENT = pygame.USEREVENT + 1
 pygame.time.set_timer(PARTICLE_EVENT,100)
 
+# TestBoss = Boss()
+# boss_group = pygame.sprite.Group()
+# boss_group.add(TestBoss)
 
 while not title_done:
 	for event in pygame.event.get():
@@ -751,12 +773,15 @@ while not title_done:
 		if event.type == pygame.QUIT:
 			quit()
 		if event.type == pygame.KEYDOWN:
-			print('poo')
 			title_done = True
 	if pygame.mouse.get_pressed()[0] == True:
 		title_done=True
 	MySlides.draw()
 	particle1.emit()
+
+	# TestBoss.update()
+	# boss_group.update()
+	# boss_group.draw(screen)
 
 	clock.tick(30)
 	pygame.display.flip()
@@ -775,7 +800,7 @@ while not done:
 	MyGame.draw()
 	MyGame.Update()
 	if myscore>=1:
-		print(myscore)
+		# #print(myscore)
 		done=True
 	pygame.display.flip()
 
@@ -785,14 +810,42 @@ while not bosscut_done:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			quit()
+		if event.type == pygame.KEYDOWN:
+			bosscut_done = True
 	BossCut.draw()
 	if BossCut.StopNow()==True:
 		bosscut_done=True
 	clock.tick(30)
 	pygame.display.flip()
 
+
+
+
+bossfight_done = False
+BossFight = MainGame(screen)
+
 TestBoss = Boss()
 boss_group = pygame.sprite.Group()
 boss_group.add(TestBoss)
+while not bossfight_done:
+	clock.tick(30)
+
+	myscore = BossFight.ScoreReturn()
+
+	BossFight.CheckInput()
+	BossFight.Initialize()
+
+	BossFight.draw()
+	BossFight.Update()
+
+	TestBoss.update()
+	boss_group.update()
+	boss_group.draw(screen)
+
+	if myscore>=10:
+		pass
+		# # #print(myscore)
+		# bossfight_done=True
+	pygame.display.flip()
 
 	
