@@ -171,8 +171,7 @@ class Boss(pygame.sprite.Sprite):
 		print(self.patience_meter)
 		pygame.draw.rect(screen, (95,93,92), pygame.Rect(50, 25, 500, 5))
 		pygame.draw.rect(screen, self.hp_color, pygame.Rect(50, 25, self.patience_meter, 5))
-
-		
+	
 class ParticlePrinciple:
 	def __init__(self):
 		self.particles = []
@@ -396,12 +395,13 @@ class JumpScare(pygame.sprite.Sprite):
 
 class MainGame(pygame.sprite.Sprite):
 	"""docstring for MainGame"""
-	def __init__(self, display,isboss):
+	def __init__(self, display,isboss,total_turns):
 		super().__init__()
 		self.display = display
 		#SOUND++++++++++++++++
 		self.ANGER = pygame.mixer.Sound("./assets/music/sound/ANGER.ogg")
 		self.OK_SOUND = pygame.mixer.Sound("./assets/music/sound/CLICK.ogg")
+		self.TRASH_SOUND = pygame.mixer.Sound("./assets/music/sound/TRASH_SOUND.ogg")
 
 		self.current_hour = int(datetime.now().strftime("%H"))
 
@@ -415,6 +415,7 @@ class MainGame(pygame.sprite.Sprite):
 		self.Sugar = KitchenThings("./assets/sugar.png",(150,400),self.display,'sugar',200,200)
 		self.Water = KitchenThings("./assets/water.png",(800,590),self.display,'water',325,195)
 		self.Heat = KitchenThings("./assets/heat.png",(1150,650),self.display,'heat',213,114)
+		self.Trash = KitchenThings("./assets/trash.png",(130,800),self.display,'trash',250,500)
 		self.CustomerTest = Customer(self.display)
 		self.MyJump = JumpScare("./assets/scare.png",self.display)
 		self.MyJump_group = pygame.sprite.Group()
@@ -440,7 +441,7 @@ class MainGame(pygame.sprite.Sprite):
 		self.order_text_group3.add(self.OrderText3)
 		self.order_text_group4.add(self.OrderText4)
 
-		self.ScoreText = realText(self.display,(1070,50),30)
+		self.ScoreText = realText(self.display,(1070,30),30)
 		self.ScoreText_group=pygame.sprite.Group()
 		self.ScoreText_group.add(self.ScoreText)
 		#------------------------
@@ -470,6 +471,10 @@ class MainGame(pygame.sprite.Sprite):
 		self.Water_Cup= "./assets/foods/Water_Cup.png"
 		self.Nothing ="./assets/foods/Nothing.png"
 
+		self.top_bar = pygame.image.load("./assets/foods/Nothing.png").convert_alpha()
+		self.top_bar = pygame.transform.scale(self.top_bar,(1280,50))
+		# pygame.draw.rect(self.display, (109,55,41), pygame.Rect(0, 0, 1280, 50))
+
 		self.menu = [self.Red_Bean_Soup,self.Beans_Cup,self.Sugar_Cup,self.Sugar_Water,self.Water_Cup,self.Nothing]
 
 		self.current_dish = order_image(self.customer_order)
@@ -487,7 +492,8 @@ class MainGame(pygame.sprite.Sprite):
 		self.order_correct = False
 		self.side_bar_color = 'black'
 		self.customer_status = 0
-		self.SCORE = 0
+		self.total_turns = total_turns
+		self.SCORE = total_turns
 		self.FAIL_COUNT=0
 		self.can_jump = False
 
@@ -537,7 +543,9 @@ class MainGame(pygame.sprite.Sprite):
 			self.side_bar_color=(115,112,0)
 
 		self.display.blit(self.bg,(320,0))
+
 		pygame.draw.rect(self.display, self.side_bar_color, pygame.Rect(0, 0, 320, 720))
+		screen.blit(self.top_bar,(0,0))
 
 		if self.isboss ==True:
 			self.boss_group.update(self.just_scored)
@@ -566,11 +574,17 @@ class MainGame(pygame.sprite.Sprite):
 
 		self.water_counter = self.Water.Draw(self.mouse_press,self.mouse_pos)
 		self.heat_counter = self.Heat.Draw(self.mouse_press,self.mouse_pos)
+		self.trash_image = self.Trash.Draw(self.mouse_press,self.mouse_pos)
+
 		self.display.blit(self.pot,(300,500))
 
 		if self.isboss==False:
-			self.ScoreText_group.update('Happy Customers: '+str(self.SCORE))
+			self.ScoreText_group.update('Customers: '+str(self.SCORE))
 			self.ScoreText_group.draw(self.display)
+		elif self.isboss==True:
+			print(self.SCORE, self.total_turns)
+			pygame.draw.rect(self.display, (255,14,23), pygame.Rect(900, 25, 300, 10))
+			pygame.draw.rect(self.display, (17,255,18), pygame.Rect(900, 25, (self.SCORE/self.total_turns)*300, 10))
 
 		self.finished_dish1.set_alpha(self.alph)
 		self.display.blit(self.finished_dish1,(0,0))
@@ -593,7 +607,7 @@ class MainGame(pygame.sprite.Sprite):
 		self.customer_order[3]-self.my_order[3],
 		]
 	def Update(self):
-		print(self.just_scored)
+		# print(self.just_scored)
 		self.just_scored=False
 		# print(len(self.customer_order),self.patience_rate)
 
@@ -616,19 +630,21 @@ class MainGame(pygame.sprite.Sprite):
 			self.my_order[2]+=1
 		elif self.heat_counter =='heat':
 			self.my_order[3]+=1
+		elif self.trash_image =='trash':
+			pygame.mixer.Sound.play(self.TRASH_SOUND)
+			self.my_order=[0,0,0,0]
 
 		if self.my_order == self.customer_order:
 			self.just_scored=True
 			self.current_dish = order_image(self.customer_order)
 			self.finished_dish1 = pygame.image.load(self.menu[self.current_dish]).convert_alpha()
-
 			pygame.mixer.Sound.play(self.OK_SOUND)
 			self.order_correct=True
 			self.customer_status = 2
 			self.show_beans = True
 			self.reset_patience=True
 			self.my_order = [0,0,0,0]
-			self.SCORE +=1
+			self.SCORE -=1
 			# print('score is '+str(self.SCORE))
 			self.customer_order = [
 				random.randint(0, 3),
@@ -851,7 +867,7 @@ while not title_done:
 
 
 done = False
-MyGame = MainGame(screen,False)
+MyGame = MainGame(screen,False,1)
 
 while not done:
 	clock.tick(30)
@@ -862,7 +878,7 @@ while not done:
 	MyGame.Initialize()
 	MyGame.draw()
 	MyGame.Update()
-	if myscore>=1:
+	if myscore<=0:
 		# #print(myscore)
 		done=True
 	pygame.display.flip()
@@ -891,7 +907,7 @@ while not bosscut_done:
 
 
 bossfight_done = False
-BossFight = MainGame(screen,True)
+BossFight = MainGame(screen,True,10)
 
 # TestBoss = Boss()
 # boss_group = pygame.sprite.Group()
