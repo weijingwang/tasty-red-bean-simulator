@@ -52,6 +52,21 @@ def order_image(order):
 		#print('Nothing')
 		return 5
 
+class FadeToBlack(object):
+		"""docstring for FadeToBlack"""
+		def __init__(self, speed):
+			super(FadeToBlack, self).__init__()
+			self.speed = speed
+			self.alphaSurface = pygame.Surface((1280,720))
+			self.alphaSurface.fill('black')
+			self.alph = 0
+			self.alphaSurface.set_alpha(self.alph)
+		def Fade(self,screen):
+			if self.alph<=100:
+				self.alph += self.speed
+				self.alphaSurface.set_alpha(self.alph)
+				screen.blit(self.alphaSurface,(0,0))
+
 class realText(pygame.sprite.Sprite):
     def __init__(self,screen,pos,size) -> None:
         super().__init__()
@@ -94,6 +109,32 @@ class Text(pygame.sprite.Sprite):
         if self.bottom == True:
             self.color = (250,200,200)
         self.image = self.myFont.render(self.message, 1, self.color)
+
+class ParticlePrinciple:
+	def __init__(self):
+		self.particles = []
+
+	def emit(self):
+		if self.particles:
+			self.delete_particles()
+			for particle in self.particles:
+				particle[0][1] += particle[2][0]
+				particle[0][0] += particle[2][1]
+				particle[1] -= 0.2
+				pygame.draw.circle(screen,pygame.Color(152,219,221),particle[0], int(particle[1]))
+
+	def add_particles(self):
+		pos_x = pygame.mouse.get_pos()[0]
+		pos_y = pygame.mouse.get_pos()[1] 
+		radius = 10
+		direction_x = random.randint(-3,3)
+		direction_y = random.randint(-3,3)
+		particle_circle = [[pos_x,pos_y],radius,[direction_x,direction_y]]
+		self.particles.append(particle_circle)
+
+	def delete_particles(self):
+		particle_copy = [particle for particle in self.particles if particle[1] > 0]
+		self.particles = particle_copy
 
 class JumpScare(pygame.sprite.Sprite):
 	"""docstring for JumpScare"""
@@ -178,7 +219,7 @@ class Boss(pygame.sprite.Sprite):
 		self.patience_meter = (self.size[1]/self.max_height)*500
 
 		#hp of boss
-		self.lives = 1
+		self.lives = 3
 		self.lives_image = pygame.image.load("./assets/heart.png")
 		self.lives_image=pygame.transform.scale(self.lives_image,(40,40))
 		self.lives_rect = self.lives_image.get_rect()
@@ -275,34 +316,6 @@ class Boss(pygame.sprite.Sprite):
 
 	def checkIfYouDied(self):
 		return self.lose
-
-
-
-class ParticlePrinciple:
-	def __init__(self):
-		self.particles = []
-
-	def emit(self):
-		if self.particles:
-			self.delete_particles()
-			for particle in self.particles:
-				particle[0][1] += particle[2][0]
-				particle[0][0] += particle[2][1]
-				particle[1] -= 0.2
-				pygame.draw.circle(screen,pygame.Color(152,219,221),particle[0], int(particle[1]))
-
-	def add_particles(self):
-		pos_x = pygame.mouse.get_pos()[0]
-		pos_y = pygame.mouse.get_pos()[1] 
-		radius = 10
-		direction_x = random.randint(-3,3)
-		direction_y = random.randint(-3,3)
-		particle_circle = [[pos_x,pos_y],radius,[direction_x,direction_y]]
-		self.particles.append(particle_circle)
-
-	def delete_particles(self):
-		particle_copy = [particle for particle in self.particles if particle[1] > 0]
-		self.particles = particle_copy
 
 class KitchenThings(pygame.sprite.Sprite):
 	def __init__(self,image_link,coords, display,kind,width,height):
@@ -440,8 +453,6 @@ class OrderText(pygame.sprite.Sprite):
 		self.rect.center = self.pos
 		self.image = self.myFont.render(message, 1, self.color)
 		self.screen.blit(self.current_item_image,self.item_rect)
-
-
 
 class MainGame(pygame.sprite.Sprite):
 	"""docstring for MainGame"""
@@ -870,8 +881,6 @@ class Title(object):
 		#print('draw')
 		self.Title1.update(True)
 
-
-
 title_slides = [
 pygame.image.load("./assets/title/title1.png").convert_alpha(),
 pygame.image.load("./assets/title/nasa_mars.jpeg").convert_alpha(),
@@ -1004,21 +1013,6 @@ while not bossfight_done:
 		# bossfight_done=True
 	pygame.display.flip()
 
-
-class FadeToBlack(object):
-		"""docstring for FadeToBlack"""
-		def __init__(self, speed):
-			super(FadeToBlack, self).__init__()
-			self.speed = speed
-			self.alphaSurface = pygame.Surface((1280,720))
-			self.alphaSurface.fill('black')
-			self.alph = 0
-			self.alphaSurface.set_alpha(self.alph)
-		def Fade(self,screen):
-			if self.alph<=100:
-				self.alph += self.speed
-				self.alphaSurface.set_alpha(self.alph)
-				screen.blit(self.alphaSurface,(0,0))
 
 
 death_done = False
