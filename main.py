@@ -52,6 +52,24 @@ def order_image(order):
 		#print('Nothing')
 		return 5
 
+class realText(pygame.sprite.Sprite):
+    def __init__(self,screen,pos,size) -> None:
+        super().__init__()
+        self.screen = screen
+        self.pos = pos
+        self.size = size
+        self.original_size = self.size
+        self.color=(250,250,250)
+        self.myFont = pygame.font.Font("./assets/font/TanoheSans-Medium.ttf", self.size)
+        self.image = self.myFont.render("_", 1, self.color)
+        self.rect = self.image.get_rect()
+        self.rect.center = self.pos
+        
+    def update(self,message):
+        self.rect = self.image.get_rect()
+        self.rect.center = self.pos
+        self.image = self.myFont.render(message, 1, self.color)
+
 class Text(pygame.sprite.Sprite):
     def __init__(self,screen,message,pos,size,bottom) -> None:
         super().__init__()
@@ -77,10 +95,52 @@ class Text(pygame.sprite.Sprite):
             self.color = (250,200,200)
         self.image = self.myFont.render(self.message, 1, self.color)
 
+class JumpScare(pygame.sprite.Sprite):
+	"""docstring for JumpScare"""
+	def __init__(self,image_link,display):
+		super().__init__()
+		self.display = display
+
+		self.bg = pygame.image.load("./assets/foods/Nothing.png").convert_alpha()
+		self.image_link = image_link
+		self.image = pygame.image.load(self.image_link).convert_alpha()
+		self.original_image = self.image
+		self.image = pygame.transform.scale(self.original_image, (0, 0))
+		self.rect = self.image.get_rect()
+		self.rect.center = (640,360)
+
+		self.scalar = 0.1
+
+		self.height =0
+		self.width = 0
+
+
+	def update(self,scare_now):
+		if scare_now==True:
+			self.display.blit(self.bg,(0,0,1280,720))
+			# if is_alive==0:
+			# 	self.kill()
+			if self.height<=800:
+				self.width+=1280*self.scalar
+				self.height+=720*self.scalar
+			# elif self.height>=800:
+			# 	pass
+
+			self.image = pygame.transform.scale(self.original_image, (int(self.width),int(self.height)))
+			self.rect = self.image.get_rect(center = (640,360))
+		# self.display.blit(self.image,self.rect)
+	def kill_now(self):
+		if self.height>=800:
+			self.height =0
+			self.width = 0
+			return True
+
 class Boss(pygame.sprite.Sprite):
 	"""docstring for Boss"""
-	def __init__(self):
+	def __init__(self,screen):
 		super().__init__()
+		self.ANGER = pygame.mixer.Sound("./assets/music/sound/ANGER.ogg")
+		self.screen=screen
 		self.images = []
 		self.images.append(pygame.image.load('./assets/boss/boss1.png').convert_alpha())
 		self.images.append(pygame.image.load('./assets/boss/boss1.png').convert_alpha())
@@ -117,15 +177,33 @@ class Boss(pygame.sprite.Sprite):
 		self.hp_color = (17,255,18)
 		self.patience_meter = (self.size[1]/self.max_height)*500
 
+		#hp of boss
+		self.lives = 3
+		self.lives_image = pygame.image.load("./assets/heart.png")
+		self.lives_image=pygame.transform.scale(self.lives_image,(40,40))
+		self.lives_rect = self.lives_image.get_rect()
+		self.lives_rect.midtop = (700,10)
+		self.lives_text = realText(self.screen,(770,30),30)
+		self.LivesText_group=pygame.sprite.Group()
+		self.LivesText_group.add(self.lives_text)
+
+		self.MyJump = JumpScare("./assets/scare.png",self.screen)
+		self.MyJump_group = pygame.sprite.Group()
+		self.MyJump_group.add(self.MyJump)
+		self.can_jump = False
+		self.done_jump=False
+
 	def update(self,knock_back):
+		if self.lives<=0:
+			quit()
 		if knock_back==True:
-			self.accel+=self.jerk
+			self.accel[0]+=self.jerk[0]
+			self.accel[1]+=self.jerk[1]
 			self.pos = [500,100]
 			self.speed=[(2489-128)/(30*self.time)/2,(1400-72)/(30*self.time)/2]#formula for 30 sec. divide to get bigger time
 			self.size = [128, 72]
 
-		if self.rect.height>=self.max_height:
-			quit()
+
 		# print(self.rect,self.rect.center)
 		self.index += 1
 		if self.index >= len(self.images):
@@ -149,8 +227,6 @@ class Boss(pygame.sprite.Sprite):
 		# self.rect.move_ip(self.speed[0]+10,self.speed[1]+10)
 		# print(str(int(clock.get_fps())))
 
-
-		
 		# self.size[0]+=self.speed[0]
 		# self.size[1]+=self.speed[1]
 		# self.speed[0]+=self.accel[0]
@@ -168,10 +244,34 @@ class Boss(pygame.sprite.Sprite):
 			self.hp_color = (255,14,23)
 		else:
 			self.hp_color = (255,255,10)
-		print(self.patience_meter)
+		# print(self.patience_meter)
 		pygame.draw.rect(screen, (95,93,92), pygame.Rect(50, 25, 500, 5))
 		pygame.draw.rect(screen, self.hp_color, pygame.Rect(50, 25, self.patience_meter, 5))
-	
+	def HPofBoss(self,screen):
+		screen.blit(self.lives_image,self.lives_rect.midtop)
+
+		self.LivesText_group.update(str(self.lives))
+		self.LivesText_group.draw(screen)
+
+		if self.rect.height>=self.max_height:
+			pygame.mixer.Sound.play(self.ANGER)
+			self.can_jump=True
+			self.lives-=1
+			self.pos = [500,100]
+			self.accel[0]+=self.jerk[0]
+			self.accel[1]+=self.jerk[1]
+			self.speed=[(2489-128)/(30*self.time)/2,(1400-72)/(30*self.time)/2]#formula for 30 sec. divide to get bigger time
+			self.size = [128, 72]
+
+		if self.can_jump == True:
+			self.MyJump_group.update(self.can_jump)
+			self.MyJump_group.draw(screen)
+			self.done_jump = self.MyJump.kill_now()
+			if self.done_jump==True:
+				self.can_jump=False
+
+
+
 class ParticlePrinciple:
 	def __init__(self):
 		self.particles = []
@@ -306,24 +406,6 @@ class Customer(pygame.sprite.Sprite):
 				self.bottomleft_comp = [1280,720]
 				return 0#
 
-class realText(pygame.sprite.Sprite):
-    def __init__(self,screen,pos,size) -> None:
-        super().__init__()
-        self.screen = screen
-        self.pos = pos
-        self.size = size
-        self.original_size = self.size
-        self.color=(250,250,250)
-        self.myFont = pygame.font.Font("./assets/font/TanoheSans-Medium.ttf", self.size)
-        self.image = self.myFont.render("_", 1, self.color)
-        self.rect = self.image.get_rect()
-        self.rect.center = self.pos
-        
-    def update(self,message):
-        self.rect = self.image.get_rect()
-        self.rect.center = self.pos
-        self.image = self.myFont.render(message, 1, self.color)
-
 class OrderText(pygame.sprite.Sprite):
 	def __init__(self,screen,pos,size,item_pos) -> None:
 		super().__init__()
@@ -353,45 +435,7 @@ class OrderText(pygame.sprite.Sprite):
 		self.image = self.myFont.render(message, 1, self.color)
 		self.screen.blit(self.current_item_image,self.item_rect)
 
-class JumpScare(pygame.sprite.Sprite):
-	"""docstring for JumpScare"""
-	def __init__(self,image_link,display):
-		super().__init__()
-		self.display = display
 
-		self.bg = pygame.image.load("./assets/foods/Nothing.png").convert_alpha()
-		self.image_link = image_link
-		self.image = pygame.image.load(self.image_link).convert_alpha()
-		self.original_image = self.image
-		self.image = pygame.transform.scale(self.original_image, (0, 0))
-		self.rect = self.image.get_rect()
-		self.rect.center = (640,360)
-
-		self.scalar = 0.1
-
-		self.height =0
-		self.width = 0
-
-
-	def update(self,scare_now):
-		if scare_now==True:
-			self.display.blit(self.bg,(0,0,1280,720))
-			# if is_alive==0:
-			# 	self.kill()
-			if self.height<=800:
-				self.width+=1280*self.scalar
-				self.height+=720*self.scalar
-			# elif self.height>=800:
-			# 	pass
-
-			self.image = pygame.transform.scale(self.original_image, (int(self.width),int(self.height)))
-			self.rect = self.image.get_rect(center = (640,360))
-		# self.display.blit(self.image,self.rect)
-	def kill_now(self):
-		if self.height>=800:
-			self.height =0
-			self.width = 0
-			return True
 
 class MainGame(pygame.sprite.Sprite):
 	"""docstring for MainGame"""
@@ -517,10 +561,11 @@ class MainGame(pygame.sprite.Sprite):
 			self.patience_rate = 1
 		self.isboss = isboss
 		if self.isboss ==True:
-			self.TestBoss = Boss()
+			self.TestBoss = Boss(self.display)
 			self.boss_group = pygame.sprite.Group()
 			self.boss_group.add(self.TestBoss)
 		self.just_scored = False
+
 
 
 	def draw(self): 
@@ -563,6 +608,8 @@ class MainGame(pygame.sprite.Sprite):
 		self.order_text_group3.draw(self.display)
 		self.order_text_group4.draw(self.display)
 
+
+
 		if self.isboss == False:
 			self.CustomerTest.Render()
 			self.customer_status_output = self.CustomerTest.Move(self.customer_status,self.order_correct)
@@ -594,6 +641,7 @@ class MainGame(pygame.sprite.Sprite):
 			pygame.draw.rect(self.display, self.hp_color, pygame.Rect(50, 25, self.patience_meter, 5))
 		elif self.isboss==True:
 			self.TestBoss.BossHP(self.display)
+			self.TestBoss.HPofBoss(self.display)
 
 	def Initialize(self):
 		# print('init')
@@ -655,7 +703,8 @@ class MainGame(pygame.sprite.Sprite):
 			# print(self.customer_order)
 
 		if sum(self.my_order) > sum(self.customer_order):
-			pygame.mixer.Sound.play(self.ANGER)
+			if self.isboss==False:
+				pygame.mixer.Sound.play(self.ANGER)
 			self.customer_status = 2
 			self.order_correct=False
 			self.reset_patience = True
@@ -675,15 +724,19 @@ class MainGame(pygame.sprite.Sprite):
 			self.count_before_jumpscare = random.randint(2, 3)
 			self.can_jump=True
 			self.FAIL_COUNT=0
-			pygame.mixer.Sound.play(self.ANGER)
+			if self.isboss==False:
+				pygame.mixer.Sound.play(self.ANGER)
 		# print(self.count_before_jumpscare)
 		# if self.SCORE>=3:
 		# 	self.isboss=True
 
 		if self.can_jump==True:
-			self.MyJump_group.update(self.can_jump)
-			self.MyJump_group.draw(self.display)
-			self.done_jump = self.MyJump.kill_now()
+			if self.isboss==False:
+				self.MyJump_group.update(self.can_jump)
+				self.MyJump_group.draw(self.display)
+				self.done_jump = self.MyJump.kill_now()
+			else:
+				self.done_jump = True
 			if self.done_jump==True:
 				self.can_jump=False
 
