@@ -365,7 +365,7 @@ class JumpScare(pygame.sprite.Sprite):
 
 class MainGame(pygame.sprite.Sprite):
 	"""docstring for MainGame"""
-	def __init__(self, display):
+	def __init__(self, display,isboss):
 		super().__init__()
 		self.display = display
 		#SOUND++++++++++++++++
@@ -459,7 +459,7 @@ class MainGame(pygame.sprite.Sprite):
 		self.SCORE = 0
 		self.FAIL_COUNT=0
 		self.can_jump = False
-		self.do_boss = False
+
 		self.mouse_pos = pygame.mouse.get_pos()
 		self.mouse_press = pygame.mouse.get_pressed()[0]
 
@@ -478,8 +478,12 @@ class MainGame(pygame.sprite.Sprite):
 			self.patience_rate=5.5
 		elif self.patience_rate<=0:
 			self.patience_rate = 1
+		self.isboss = isboss
+		if self.isboss ==True:
+			self.TestBoss = Boss()
+			self.boss_group = pygame.sprite.Group()
+			self.boss_group.add(self.TestBoss)
 
-		self.boss_mode = False
 
 	def draw(self): 
 		if self.patience_meter<187:
@@ -502,6 +506,13 @@ class MainGame(pygame.sprite.Sprite):
 
 		self.display.blit(self.bg,(320,0))
 		pygame.draw.rect(self.display, self.side_bar_color, pygame.Rect(0, 0, 320, 720))
+
+		if self.isboss ==True:
+			self.TestBoss.update()
+			self.boss_group.update()
+			self.boss_group.draw(self.display)
+
+
 		self.bean_counter = self.RedBeans.Draw(self.mouse_press,self.mouse_pos)
 		self.sugar_counter = self.Sugar.Draw(self.mouse_press,self.mouse_pos)
 		self.order_text_group1.update(str(self.customer_order_counting[0]),0)
@@ -513,11 +524,12 @@ class MainGame(pygame.sprite.Sprite):
 		self.order_text_group3.draw(self.display)
 		self.order_text_group4.draw(self.display)
 
-		if self.do_boss == False:
+		if self.isboss == False:
 			self.CustomerTest.Render()
 			self.customer_status_output = self.CustomerTest.Move(self.customer_status,self.order_correct)
 			self.customer_status = self.customer_status_output
 			self.CustomerTest.Update()
+
 
 		pygame.draw.rect(self.display, (170,135,54), pygame.Rect(0, 570, 1280, 150))
 
@@ -525,7 +537,7 @@ class MainGame(pygame.sprite.Sprite):
 		self.heat_counter = self.Heat.Draw(self.mouse_press,self.mouse_pos)
 		self.display.blit(self.pot,(300,500))
 
-		if self.do_boss==False:
+		if self.isboss==False:
 			self.ScoreText_group.update('Happy Customers: '+str(self.SCORE))
 			self.ScoreText_group.draw(self.display)
 
@@ -614,7 +626,7 @@ class MainGame(pygame.sprite.Sprite):
 			pygame.mixer.Sound.play(self.ANGER)
 		# print(self.count_before_jumpscare)
 		# if self.SCORE>=3:
-		# 	self.do_boss=True
+		# 	self.isboss=True
 
 		if self.can_jump==True:
 			self.MyJump_group.update(self.can_jump)
@@ -788,7 +800,7 @@ while not title_done:
 
 
 done = False
-MyGame = MainGame(screen)
+MyGame = MainGame(screen,False)
 
 while not done:
 	clock.tick(30)
@@ -822,11 +834,11 @@ while not bosscut_done:
 
 
 bossfight_done = False
-BossFight = MainGame(screen)
+BossFight = MainGame(screen,True)
 
-TestBoss = Boss()
-boss_group = pygame.sprite.Group()
-boss_group.add(TestBoss)
+# TestBoss = Boss()
+# boss_group = pygame.sprite.Group()
+# boss_group.add(TestBoss)
 while not bossfight_done:
 	clock.tick(30)
 
@@ -838,9 +850,9 @@ while not bossfight_done:
 	BossFight.draw()
 	BossFight.Update()
 
-	TestBoss.update()
-	boss_group.update()
-	boss_group.draw(screen)
+	# TestBoss.update()
+	# boss_group.update()
+	# boss_group.draw(screen)
 
 	if myscore>=10:
 		pass
