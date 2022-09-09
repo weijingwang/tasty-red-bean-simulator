@@ -99,21 +99,29 @@ class Boss(pygame.sprite.Sprite):
 
 		self.images.append(pygame.image.load('./assets/boss/boss1.png').convert_alpha())
 
-
+		self.max_height=2000
 		self.index = 0
 		self.image = self.images[self.index]
 		self.rect = self.image.get_rect()
-		self.pos = [640,360]
+		self.pos = [500,100]
 		self.rect.center = self.pos
-		# self.accel = [0,0]
+		self.accel = [128/1000, 72/1000]
 		self.time = 60
 		self.speed=[(2489-128)/(30*self.time)/2,(1400-72)/(30*self.time)/2]#formula for 30 sec. divide to get bigger time
 		self.size = [128, 72]
 		self.rect.size = self.size
 		self.image = pygame.transform.scale(self.image, self.rect.size)
 
-	def update(self):
-		if self.rect.height>=1400:
+		#hp
+		self.hp_color = (17,255,18)
+		self.patience_meter = (self.size[1]/self.max_height)*500
+	def update(self,knock_back):
+		if knock_back==True:
+			self.pos = [500,100]
+			self.speed=[(2489-128)/(30*self.time)/2,(1400-72)/(30*self.time)/2]#formula for 30 sec. divide to get bigger time
+			self.size = [128, 72]
+
+		if self.rect.height>=self.max_height:
 			quit()
 		# print(self.rect,self.rect.center)
 		self.index += 1
@@ -123,11 +131,20 @@ class Boss(pygame.sprite.Sprite):
 
 
 		self.size = [self.size[0]+self.speed[0],self.size[1]+self.speed[1]]
+		self.speed[0]+=self.accel[0]
+		self.speed[1]+=self.accel[1]
+		# print(self.speed)
+
+		if self.pos[0]<=640:
+			self.pos[0]+=1
+		if self.pos[1]<=360:
+			self.pos[1]+=1
+
 		self.rect.center = self.pos
 		self.rect.size = self.size
 		self.image = pygame.transform.scale(self.image, self.rect.size)
 		# self.rect.move_ip(self.speed[0]+10,self.speed[1]+10)
-		print(str(int(clock.get_fps())))
+		# print(str(int(clock.get_fps())))
 
 
 		
@@ -139,6 +156,19 @@ class Boss(pygame.sprite.Sprite):
 
 	def draw(self,screen):
 		screen.blit(self.image,self.rect)
+	def BossHP(self,screen):
+		self.patience_meter = (self.size[1]/self.max_height)*500
+
+		if self.patience_meter<187:
+			self.hp_color = (17,255,18)
+		elif self.patience_meter>353:
+			self.hp_color = (255,14,23)
+		else:
+			self.hp_color = (255,255,10)
+		print(self.patience_meter)
+		pygame.draw.rect(screen, (95,93,92), pygame.Rect(50, 25, 500, 5))
+		pygame.draw.rect(screen, self.hp_color, pygame.Rect(50, 25, self.patience_meter, 5))
+
 		
 class ParticlePrinciple:
 	def __init__(self):
@@ -481,6 +511,7 @@ class MainGame(pygame.sprite.Sprite):
 			self.TestBoss = Boss()
 			self.boss_group = pygame.sprite.Group()
 			self.boss_group.add(self.TestBoss)
+		self.just_scored = False
 
 
 	def draw(self): 
@@ -506,8 +537,7 @@ class MainGame(pygame.sprite.Sprite):
 		pygame.draw.rect(self.display, self.side_bar_color, pygame.Rect(0, 0, 320, 720))
 
 		if self.isboss ==True:
-			self.TestBoss.update()
-			self.boss_group.update()
+			self.boss_group.update(self.just_scored)
 			self.boss_group.draw(self.display)
 
 
@@ -542,9 +572,11 @@ class MainGame(pygame.sprite.Sprite):
 		self.finished_dish1.set_alpha(self.alph)
 		self.display.blit(self.finished_dish1,(0,0))
 		self.particle1.emit()
-
-		pygame.draw.rect(self.display, (95,93,92), pygame.Rect(50, 25, 500, 5))
-		pygame.draw.rect(self.display, self.hp_color, pygame.Rect(50, 25, self.patience_meter, 5))
+		if self.isboss==False:
+			pygame.draw.rect(self.display, (95,93,92), pygame.Rect(50, 25, 500, 5))
+			pygame.draw.rect(self.display, self.hp_color, pygame.Rect(50, 25, self.patience_meter, 5))
+		elif self.isboss==True:
+			self.TestBoss.BossHP(self.display)
 
 	def Initialize(self):
 		# print('init')
@@ -558,6 +590,8 @@ class MainGame(pygame.sprite.Sprite):
 		self.customer_order[3]-self.my_order[3],
 		]
 	def Update(self):
+		print(self.just_scored)
+		self.just_scored=False
 		# print(len(self.customer_order),self.patience_rate)
 
 		if self.reset_patience==True:
@@ -581,6 +615,7 @@ class MainGame(pygame.sprite.Sprite):
 			self.my_order[3]+=1
 
 		if self.my_order == self.customer_order:
+			self.just_scored=True
 			self.current_dish = order_image(self.customer_order)
 			self.finished_dish1 = pygame.image.load(self.menu[self.current_dish]).convert_alpha()
 
@@ -831,6 +866,7 @@ while not done:
 
 pygame.mixer.fadeout(1000)
 pygame.mixer.music.load("./assets/music/bean-boss.ogg")
+# pygame.mixer.music.load("./assets/music/beancredit.ogg")
 pygame.mixer.music.play(-1,0.0)
 pygame.mixer.music.set_volume(0.5)
 
