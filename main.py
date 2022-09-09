@@ -3,7 +3,7 @@ import random
 from datetime import datetime
 pygame.mixer.pre_init()
 pygame.init()
-pygame.display.set_caption("Tasty Red Bean Simulator (Pyweek34)")
+pygame.display.set_caption("tasty red bean simulator (pyweek34)")
 screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
 
@@ -79,7 +79,52 @@ class Text(pygame.sprite.Sprite):
             self.color = (250,200,200)
         self.image = self.myFont.render(self.message, 1, self.color)
 
+class Boss(pygame.sprite.Sprite):
+	"""docstring for Boss"""
+	def __init__(self):
+		super().__init__()
+		self.images = []
+		self.images.append(pygame.image.load('./assets/boss/boss1.png').convert_alpha())
+		self.images.append(pygame.image.load('./assets/boss/boss1.png').convert_alpha())
 
+		self.images.append(pygame.image.load('./assets/boss/boss2.png').convert_alpha())
+
+		self.images.append(pygame.image.load('./assets/boss/boss3.png').convert_alpha())
+
+		self.images.append(pygame.image.load('./assets/boss/boss4.png').convert_alpha())
+
+		self.images.append(pygame.image.load('./assets/boss/boss5.png').convert_alpha())
+		self.images.append(pygame.image.load('./assets/boss/boss5.png').convert_alpha())
+		self.images.append(pygame.image.load('./assets/boss/boss5.png').convert_alpha())
+
+		self.images.append(pygame.image.load('./assets/boss/boss6.png').convert_alpha())
+
+		self.images.append(pygame.image.load('./assets/boss/boss1.png').convert_alpha())
+
+
+		self.index = 0
+		self.image = self.images[self.index]
+		self.rect = self.image.get_rect()
+		self.rect.center = (1280/2,720/2)
+		self.accel = [1280/100000,720/100000]
+		self.speed=[1280/10000,720/10000]
+
+		self.size = [1280/100,720/100]
+	def update(self):
+		self.index += 1
+		if self.index >= len(self.images):
+			self.index = 0
+		self.image = self.images[self.index]
+		self.image = pygame.transform.scale(self.image, (self.size[0], self.size[1]))
+		self.size[0]+=self.speed[0]
+		self.size[1]+=self.speed[1]
+		self.speed[0]+=self.accel[0]
+		self.speed[1]+=self.accel[1]
+
+
+		self.rect = self.image.get_rect()
+		self.rect.center = (1280/2,720/2)
+		
 class ParticlePrinciple:
 	def __init__(self):
 		self.particles = []
@@ -200,9 +245,6 @@ class Customer(pygame.sprite.Sprite):
 			return 1
 			# print('wait')
 
-
-
-
 		if status ==2:
 			if order_correct==True:
 				self.image = self.images[1]
@@ -216,18 +258,6 @@ class Customer(pygame.sprite.Sprite):
 				self.rect.bottomleft = 1280,720
 				self.bottomleft_comp = [1280,720]
 				return 0
-		# print(self.rect)
-
-
-		
-
-		# if self.rect.bottom< 521:
-		# 	self.rect.move_ip(0,-1)
-		# elif self.rect.bottom510:
-		# 	self.rect.move_ip(0,1)
-
-	def CheckOrder(self):
-		pass
 
 class realText(pygame.sprite.Sprite):
     def __init__(self,screen,pos,size) -> None:
@@ -420,7 +450,7 @@ class MainGame(pygame.sprite.Sprite):
 
 
 		self.patience_meter = 0
-		self.patience_rate = -0.5*sum(self.customer_order)+5#random.randint(2,6)/3
+		self.patience_rate = -0.5*sum(self.customer_order)+3#random.randint(2,6)/3
 		self.reset_patience = False
 		self.patience_rate_increment = 0
 		self.patience_rate_increaser = 0
@@ -431,6 +461,8 @@ class MainGame(pygame.sprite.Sprite):
 			self.patience_rate=5.5
 		elif self.patience_rate<=0:
 			self.patience_rate = 1
+
+		self.boss_mode = False
 
 	def draw(self): 
 		if self.patience_meter<187:
@@ -504,7 +536,7 @@ class MainGame(pygame.sprite.Sprite):
 		if self.reset_patience==True:
 			self.patience_rate_increaser+=self.patience_rate_increment
 			self.patience_meter = 0
-			self.patience_rate = -0.5*sum(self.customer_order)+5+self.patience_rate_increaser
+			self.patience_rate = -0.5*sum(self.customer_order)+3+self.patience_rate_increaser
 			if self.patience_rate>=5.5:
 				self.patience_rate=5.5
 			elif self.patience_rate<=0:
@@ -625,7 +657,7 @@ class ScaleSprite(pygame.sprite.Sprite):
 
 class SlideShow(object):
 	"""docstring for SlideShow"""
-	def __init__(self,screen):
+	def __init__(self,screen,images):
 		super().__init__()
 		self.screen = screen
 		self.title_text = Text(self.screen,"Tasty Red Bean Simulator",(1280/2,720-720/5-720/20),100,False)
@@ -633,15 +665,7 @@ class SlideShow(object):
 		self.text_group = pygame.sprite.Group()
 		self.text_group.add(self.title_text)
 		# self.text_group.add(self.instruction_text)
-		self.images = [
-		pygame.image.load("./assets/title/title1.png").convert_alpha(),
-		pygame.image.load("./assets/title/nasa_mars.jpeg").convert_alpha(),
-		pygame.image.load("./assets/title/title2.png").convert_alpha(),
-		pygame.image.load("./assets/title/title5.png").convert_alpha(),
-		pygame.image.load("./assets/title/nasa_rover.jpeg").convert_alpha(),
-		pygame.image.load("./assets/title/title3a.png").convert_alpha(),
-		pygame.image.load("./assets/title/title4.png").convert_alpha(),
-		]
+		self.images = images
 		self.index = 0
 		self.image = self.images[self.index]
 		self.rect=self.image.get_rect()
@@ -692,11 +716,33 @@ class Title(object):
 		self.Title1.update(True)
 
 
-MySlides = SlideShow(screen)
+
+title_slides = [
+pygame.image.load("./assets/title/title1.png").convert_alpha(),
+pygame.image.load("./assets/title/nasa_mars.jpeg").convert_alpha(),
+pygame.image.load("./assets/title/title2.png").convert_alpha(),
+pygame.image.load("./assets/title/title5.png").convert_alpha(),
+pygame.image.load("./assets/title/nasa_rover.jpeg").convert_alpha(),
+pygame.image.load("./assets/title/title3a.png").convert_alpha(),
+pygame.image.load("./assets/title/title4.png").convert_alpha()
+]
+
+boss_slides = [
+pygame.image.load("./assets/boss/cut1.png").convert_alpha(),
+pygame.image.load("./assets/boss/cut2.png").convert_alpha(),
+pygame.image.load("./assets/boss/cut3.png").convert_alpha(),
+pygame.image.load("./assets/boss/cut4.png").convert_alpha()
+]
+
+MySlides = SlideShow(screen,boss_slides)
 title_done = False
 particle1=ParticlePrinciple()
 PARTICLE_EVENT = pygame.USEREVENT + 1
 pygame.time.set_timer(PARTICLE_EVENT,100)
+
+TestBoss = Boss()
+boss_group = pygame.sprite.Group()
+boss_group.add(TestBoss)
 while not title_done:
 	for event in pygame.event.get():
 		if event.type == PARTICLE_EVENT:
@@ -710,12 +756,15 @@ while not title_done:
 		title_done=True
 	MySlides.draw()
 	particle1.emit()
+	boss_group.update()
+	boss_group.draw(screen)
 	clock.tick(30)
 	pygame.display.flip()
 
 
 done = False
 MyGame = MainGame(screen)
+
 while not done:
 	clock.tick(30)
 
@@ -725,9 +774,21 @@ while not done:
 	MyGame.Initialize()
 	MyGame.draw()
 	MyGame.Update()
-	if myscore>=30:
+	if myscore>=3:
 		print(myscore)
 		done=True
+	pygame.display.flip()
+
+cut_done = False
+BossCut = SlideShow(screen)
+while not cut_done:
+	for event in pygame.event.get():
+		if event.type == pygame.QUIT:
+			quit()
+
+	MySlides.draw()
+
+	clock.tick(30)
 	pygame.display.flip()
 
 
