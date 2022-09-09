@@ -7,9 +7,7 @@ pygame.display.set_caption("tasty red bean simulator (pyweek34)")
 screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
 
-pygame.mixer.music.load("./assets/music/red-planet_compress.ogg")
-pygame.mixer.music.play(-1,0.0)
-pygame.mixer.music.set_volume(0.5)
+
 
 #beans,sugar,water,heat
 # menu = [Red_Bean_Soup,	Beans_Cup,	Sugar_Cup,	Sugar_Water,	Water_Cup,	Nothing]
@@ -703,9 +701,16 @@ class SlideShow(object):
 		self.image.set_alpha(self.alph)
 		self.mode = 1
 		self.stop = False
+		if self.isboss==True:
+			self.max_alph = 500
+			self.min_alph = -100
+		else:
+			self.max_alph = 400
+			self.min_alph = 0
+
 	def draw(self):
 		self.screen.fill('black')
-		if self.alph >=400:
+		if self.alph >=self.max_alph:
 			self.mode =-1
 		elif self.alph <=-0:
 			self.index+=1
@@ -762,9 +767,12 @@ pygame.image.load("./assets/title/title4.png").convert_alpha()
 ]
 
 boss_slides = [
+pygame.image.load("./assets/title/title2.png").convert_alpha(),
 pygame.image.load("./assets/boss/cut1.png").convert_alpha(),
 pygame.image.load("./assets/boss/cut2.png").convert_alpha(),
+pygame.image.load("./assets/title/title1.png").convert_alpha(),
 pygame.image.load("./assets/boss/cut3.png").convert_alpha()
+
 # pygame.image.load("./assets/boss/cut4.png").convert_alpha()
 ]
 
@@ -777,6 +785,11 @@ pygame.time.set_timer(PARTICLE_EVENT,100)
 # TestBoss = Boss()
 # boss_group = pygame.sprite.Group()
 # boss_group.add(TestBoss)
+
+pygame.mixer.music.load("./assets/music/red-planet_compress.ogg")
+pygame.mixer.music.play(-1,0.0)
+pygame.mixer.music.set_volume(0.5)
+
 
 while not title_done:
 	for event in pygame.event.get():
@@ -816,6 +829,11 @@ while not done:
 		done=True
 	pygame.display.flip()
 
+pygame.mixer.fadeout(1000)
+pygame.mixer.music.load("./assets/music/bean-boss.ogg")
+pygame.mixer.music.play(-1,0.0)
+pygame.mixer.music.set_volume(0.5)
+
 bosscut_done = False
 BossCut = SlideShow(screen,boss_slides,True)
 while not bosscut_done:
@@ -839,6 +857,7 @@ BossFight = MainGame(screen,True)
 # TestBoss = Boss()
 # boss_group = pygame.sprite.Group()
 # boss_group.add(TestBoss)
+
 while not bossfight_done:
 	clock.tick(30)
 
