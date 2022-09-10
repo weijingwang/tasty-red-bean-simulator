@@ -1076,6 +1076,10 @@ endText = Text(screen,"Tasty Red Bean Simulator",(1280/2,720-720/5-720/20),100,F
 endTextGroup = pygame.sprite.Group()
 endTextGroup.add(endText)
 
+endText1 = Text(screen,"thanks for playing!",(1280/2,720-720/15-720/30),60,False)
+endTextGroup1 = pygame.sprite.Group()
+endTextGroup1.add(endText1)
+
 if true_end ==True:
 	# print('true end activate')
 	# pygame.mixer.fadeout(1000)
@@ -1095,6 +1099,8 @@ if true_end ==True:
 		screen.blit(last_picture,(random.randrange(-3,3),random.randrange(-3,3)))
 		endTextGroup.update(True)
 		endTextGroup.draw(screen)
+		endTextGroup1.update(True)
+		endTextGroup1.draw(screen)
 		clock.tick(30)
 		pygame.display.flip()
 
