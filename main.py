@@ -918,10 +918,7 @@ pygame.image.load("./assets/boss/cut1.png").convert_alpha(),
 pygame.image.load("./assets/boss/cut2.png").convert_alpha(),
 pygame.image.load("./assets/title/title1.png").convert_alpha(),
 pygame.image.load("./assets/boss/cut3.png").convert_alpha()
-
-# pygame.image.load("./assets/boss/cut4.png").convert_alpha()
 ]
-
 end_slides = [
 pygame.image.load("./assets/end/end1.png").convert_alpha(),
 pygame.image.load("./assets/end/end2.png").convert_alpha(),
@@ -932,22 +929,42 @@ pygame.image.load("./assets/end/end6.png").convert_alpha()
 ]
 last_picture =  pygame.image.load("./assets/end/end7.png").convert_alpha()
 
-MySlides = SlideShow(screen,title_slides,False)
-title_done = False
+
 particle1=ParticlePrinciple()
 PARTICLE_EVENT = pygame.USEREVENT + 1
 pygame.time.set_timer(PARTICLE_EVENT,100)
 
-# TestBoss = Boss()
-# boss_group = pygame.sprite.Group()
-# boss_group.add(TestBoss)
+
+endText = Text(screen,"Tasty Red Bean Simulator",(1280/2,720-720/5-720/20),100,False)
+endTextGroup = pygame.sprite.Group()
+endTextGroup.add(endText)
+
+endText1 = Text(screen,"thanks for playing!",(1280/2,720-720/15-720/30),60,False)
+endTextGroup1 = pygame.sprite.Group()
+endTextGroup1.add(endText1)
+
+title_done = False
+done = False
+bosscut_done = False
+bossfight_done = False
+end_done = False
+true_end_done=False
+death_done = False
+
+true_end = False
+won_game= False
+death = False
+
+MyGame = MainGame(screen,False,10)
+BossFight = MainGame(screen,True,10)
+MySlides = SlideShow(screen,title_slides,False)
+BossCut = SlideShow(screen,boss_slides,True)
+EndCut = SlideShow(screen,end_slides,True)
+DeathFade = FadeToBlack(0.1)
 
 pygame.mixer.music.load("./assets/music/red-planet_compress.ogg")
 pygame.mixer.music.play(-1,0.0)
 pygame.mixer.music.set_volume(0.5)
-
-
-won_game= False
 
 while not title_done:
 	for event in pygame.event.get():
@@ -962,16 +979,9 @@ while not title_done:
 	MySlides.draw()
 	particle1.emit()
 
-	# TestBoss.update()
-	# boss_group.update()
-	# boss_group.draw(screen)
-
 	clock.tick(30)
 	pygame.display.flip()
 
-
-done = False
-MyGame = MainGame(screen,False,1)
 
 while not done:
 	clock.tick(30)
@@ -983,18 +993,17 @@ while not done:
 	MyGame.draw()
 	MyGame.Update()
 	if myscore<=0:
-		# #print(myscore)
 		done=True
 	pygame.display.flip()
 
+
+
 pygame.mixer.music.fadeout(10)
 pygame.mixer.music.load("./assets/music/bean-boss.ogg")
-# pygame.mixer.music.load("./assets/music/beancredit.ogg")
 pygame.mixer.music.play(-1,0.0)
 pygame.mixer.music.set_volume(0.5)
 
-bosscut_done = False
-BossCut = SlideShow(screen,boss_slides,True)
+
 while not bosscut_done:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -1007,18 +1016,6 @@ while not bosscut_done:
 	clock.tick(30)
 	pygame.display.flip()
 
-
-
-
-bossfight_done = False
-BossFight = MainGame(screen,True,1)
-
-# TestBoss = Boss()
-# boss_group = pygame.sprite.Group()
-# boss_group.add(TestBoss)
-
-
-death = False
 
 while not bossfight_done:
 	clock.tick(30)
@@ -1036,21 +1033,16 @@ while not bossfight_done:
 	BossFight.draw()
 	BossFight.Update()
 
-	# TestBoss.update()
-	# boss_group.update()
-	# boss_group.draw(screen)
 
 	if myscore<=0:
 		won_game= True
 		pygame.mixer.music.fadeout(20000)
 		bossfight_done=True
-		# # #print(myscore)
-		# bossfight_done=True
+
 	pygame.display.flip()
 
 
-death_done = False
-DeathFade = FadeToBlack(0.1)
+
 
 if death==True:
 	pygame.mixer.music.fadeout(60000)
@@ -1065,9 +1057,6 @@ if death==True:
 
 	
 
-true_end = False
-end_done = False
-EndCut = SlideShow(screen,end_slides,True)
 if won_game ==True:
 	# pygame.mixer.fadeout(1000)
 	# pygame.mixer.music.load("./assets/music/beancredit.ogg")
@@ -1078,7 +1067,7 @@ if won_game ==True:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				quit()
-			if event.type == pygame.KEYDOWN:
+			if event.type == pygame.KEYDOWN: #event.key == pygame.K_RETURN
 				pygame.mixer.music.stop()
 				true_end = True
 				end_done = True
@@ -1091,14 +1080,7 @@ if won_game ==True:
 
 		clock.tick(30)
 		pygame.display.flip()
-true_end_done=False
-endText = Text(screen,"Tasty Red Bean Simulator",(1280/2,720-720/5-720/20),100,False)
-endTextGroup = pygame.sprite.Group()
-endTextGroup.add(endText)
 
-endText1 = Text(screen,"thanks for playing!",(1280/2,720-720/15-720/30),60,False)
-endTextGroup1 = pygame.sprite.Group()
-endTextGroup1.add(endText1)
 
 if true_end ==True:
 	# print('true end activate')
