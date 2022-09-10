@@ -5,14 +5,14 @@ This game is set on a red planet similar to the planet Mars of our solar system.
 
 The locals are silvery creature with tempers so singular that caution must always be advised when around them, especially when an incorrect order or an ill-advised work attitude could result in instant death.
 
-*Should you desire to try this arduous trial,
-be advis’d to think quick and to move quick,
-choose the stove, beans, sugar, water, and click,
-then if you prepar’d the correct order,
-the silv’ry creatures exit with a smile.*
+*Should you desire to try this arduous trial,*
+*be advis’d to think quick and to move quick,*
+*choose the stove, beans, sugar, water, and click,*
+*then if you prepar’d the correct order,*
+*the silv’ry creatures exit with a smile.*
 
-*Go behind the counter swiftly my friend,
-to the kitchen where you will meet the end.*
+*Go behind the counter swiftly my friend,*
+*to the kitchen where you will meet the end.*
 
 
 The first release of this exemplary computer game, that not only fully satisfies a gamer's need for original visual assets, but also is novel in the way that it introduces most excellent music compositions of the grandest scale. The previously mentioned game, "tasty red bean simulator", written in entirely Python3 and Pygame, was created for the prestigious, biannual python game jam, Pyweek for the 34th iteration.
