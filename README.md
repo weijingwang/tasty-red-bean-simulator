@@ -1,5 +1,5 @@
 # tasty-red-bean-simulator
-made for pyweek 34 (red planet). made in 4 days because I started late. Drew all the art and composed music. The sound effects, fonts and photos used are in the credits text file.
+made for pyweek 34 (red planet). made in 4 days because I started late. Includes original art and music compositons. The sound effects, fonts and photos used are in the credits text file.
 
 ## Description
 you are on a red planet like mars and you will serve creatures a red dish... or a red bean dish.
