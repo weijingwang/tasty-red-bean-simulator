@@ -61,11 +61,30 @@ class FadeToBlack(object):
 			self.alphaSurface.fill('black')
 			self.alph = 0
 			self.alphaSurface.set_alpha(self.alph)
+			self.max_alph = 10
+			self.min_alph = -100
+			self.stop = False
+			self.show_image = False
+			self.deathpng=pygame.image.load('./assets/death.png').convert_alpha()
+			self.fading_now = False
+			self.mode = 1
 		def Fade(self,screen):
-			if self.alph<=100:
-				self.alph += self.speed
+			if self.alph >=self.max_alph:
+				self.mode =-1
+				self.show_image=True
+			elif self.alph <=self.min_alph:
+				self.mode=1
+
+
+			if self.show_image==True:
+				screen.blit(self.deathpng,(0,0))
+
+			else:
+				self.alph +=self.speed*self.mode
 				self.alphaSurface.set_alpha(self.alph)
 				screen.blit(self.alphaSurface,(0,0))
+				# print(self.alph,self.stop,self.show_image)
+
 
 class realText(pygame.sprite.Sprite):
     def __init__(self,screen,pos,size) -> None:
@@ -219,7 +238,7 @@ class Boss(pygame.sprite.Sprite):
 		self.patience_meter = (self.size[1]/self.max_height)*500
 
 		#hp of boss
-		self.lives = 3
+		self.lives = 1
 		self.lives_image = pygame.image.load("./assets/heart.png")
 		self.lives_image=pygame.transform.scale(self.lives_image,(40,40))
 		self.lives_rect = self.lives_image.get_rect()
@@ -1005,7 +1024,7 @@ while not bossfight_done:
 	clock.tick(30)
 
 	if BossFight.Lose() == True:
-		print('LOSE!!!!')
+		# print('LOSE!!!!')
 		death = True
 		bossfight_done=True
 
@@ -1032,6 +1051,7 @@ while not bossfight_done:
 
 death_done = False
 DeathFade = FadeToBlack(0.1)
+
 if death==True:
 	pygame.mixer.music.fadeout(60000)
 	while not death_done:
@@ -1039,6 +1059,7 @@ if death==True:
 			if event.type == pygame.QUIT:
 				quit()
 		clock.tick(30)
+		
 		DeathFade.Fade(screen)
 		pygame.display.flip()
 
