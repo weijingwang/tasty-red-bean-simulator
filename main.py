@@ -861,6 +861,8 @@ class SlideShow(object):
 	def StopNow(self):
 		if self.stop == True:
 			return True
+	def MyIndex(self):
+		return self.index
 
 class Title(object):
 	"""docstring for TitleImage"""
@@ -901,6 +903,16 @@ pygame.image.load("./assets/boss/cut3.png").convert_alpha()
 # pygame.image.load("./assets/boss/cut4.png").convert_alpha()
 ]
 
+end_slides = [
+pygame.image.load("./assets/end/end1.png").convert_alpha(),
+pygame.image.load("./assets/end/end2.png").convert_alpha(),
+pygame.image.load("./assets/end/end3.png").convert_alpha(),
+pygame.image.load("./assets/end/end4.png").convert_alpha(),
+pygame.image.load("./assets/end/end5.png").convert_alpha(),
+pygame.image.load("./assets/end/end6.png").convert_alpha()
+]
+last_picture =  pygame.image.load("./assets/end/end7.png").convert_alpha()
+
 MySlides = SlideShow(screen,title_slides,False)
 title_done = False
 particle1=ParticlePrinciple()
@@ -915,6 +927,8 @@ pygame.mixer.music.load("./assets/music/red-planet_compress.ogg")
 pygame.mixer.music.play(-1,0.0)
 pygame.mixer.music.set_volume(0.5)
 
+
+won_game= False
 
 while not title_done:
 	for event in pygame.event.get():
@@ -954,7 +968,7 @@ while not done:
 		done=True
 	pygame.display.flip()
 
-pygame.mixer.fadeout(1000)
+pygame.mixer.music.fadeout(10)
 pygame.mixer.music.load("./assets/music/bean-boss.ogg")
 # pygame.mixer.music.load("./assets/music/beancredit.ogg")
 pygame.mixer.music.play(-1,0.0)
@@ -978,7 +992,7 @@ while not bosscut_done:
 
 
 bossfight_done = False
-BossFight = MainGame(screen,True,10)
+BossFight = MainGame(screen,True,1)
 
 # TestBoss = Boss()
 # boss_group = pygame.sprite.Group()
@@ -1007,12 +1021,13 @@ while not bossfight_done:
 	# boss_group.update()
 	# boss_group.draw(screen)
 
-	if myscore>=10:
-		pass
+	if myscore<=0:
+		won_game= True
+		pygame.mixer.music.fadeout(20000)
+		bossfight_done=True
 		# # #print(myscore)
 		# bossfight_done=True
 	pygame.display.flip()
-
 
 
 death_done = False
@@ -1028,3 +1043,59 @@ if death==True:
 		pygame.display.flip()
 
 	
+
+true_end = False
+end_done = False
+EndCut = SlideShow(screen,end_slides,True)
+if won_game ==True:
+	# pygame.mixer.fadeout(1000)
+	# pygame.mixer.music.load("./assets/music/beancredit.ogg")
+	# # pygame.mixer.music.load("./assets/music/beancredit.ogg")
+	# pygame.mixer.music.play(-1,0.0)
+	# pygame.mixer.music.set_volume(0.5)
+	while not end_done:
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				quit()
+			if event.type == pygame.KEYDOWN:
+				true_end = True
+				end_done = True
+		EndCut.draw()
+		if EndCut.MyIndex()==4:
+			pass
+		if EndCut.StopNow()==True:
+			true_end = True
+			end_done=True
+
+		clock.tick(30)
+		pygame.display.flip()
+print('out of loop')
+true_end_done=False
+endText = Text(screen,"Tasty Red Bean Simulator",(1280/2,720-720/5-720/20),100,False)
+endTextGroup = pygame.sprite.Group()
+endTextGroup.add(endText)
+
+if true_end ==True:
+	# print('true end activate')
+	# pygame.mixer.fadeout(1000)
+	pygame.mixer.music.load("./assets/music/beancredit.ogg")
+	# pygame.mixer.music.load("./assets/music/beancredit.ogg")
+	pygame.mixer.music.play(-1,0.0)
+	pygame.mixer.music.set_volume(0.5)
+	while not true_end_done:
+		# print('in loop end')
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				quit()
+			# if event.type == pygame.KEYDOWN:
+			# 	true_end_done = True
+		# print('asd')
+		screen.fill((98,136,140))
+		screen.blit(last_picture,(random.randrange(-3,3),random.randrange(-3,3)))
+		endTextGroup.update(True)
+		endTextGroup.draw(screen)
+		clock.tick(30)
+		pygame.display.flip()
+
+
+
