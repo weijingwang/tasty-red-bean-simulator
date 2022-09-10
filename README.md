@@ -24,7 +24,7 @@ Then do ```python3 main.py```
 the game is pretty self-explanatory. Click on the red bean, sugar, water or stove to make food. Click the trash can to restart. The pot is for decoration.
 The bar on the left shows how much you have left before the customer is angry.
 
-can skip cutscene with SPACE
+can skip cutscene with ANY BUTTON
 
 bar on right in boss mode is boss HP
 hearts in top middle are your lives. Once you run out you die.
