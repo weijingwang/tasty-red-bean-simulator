@@ -1058,6 +1058,7 @@ if won_game ==True:
 			if event.type == pygame.QUIT:
 				quit()
 			if event.type == pygame.KEYDOWN:
+				pygame.mixer.music.stop()
 				true_end = True
 				end_done = True
 		EndCut.draw()
