@@ -238,7 +238,7 @@ class Boss(pygame.sprite.Sprite):
 		self.patience_meter = (self.size[1]/self.max_height)*500
 
 		#hp of boss
-		self.lives = 1
+		self.lives = 3
 		self.lives_image = pygame.image.load("./assets/heart.png")
 		self.lives_image=pygame.transform.scale(self.lives_image,(40,40))
 		self.lives_rect = self.lives_image.get_rect()
