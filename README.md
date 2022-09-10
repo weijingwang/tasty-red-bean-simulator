@@ -1,6 +1,6 @@
 # tasty-red-bean-simulator
 
-“tasty red bean simulator” is a video game written entirely in Python3 and Pygame for the biannual game jam Pyweek (34). All the contents were finished within the last 4 days due to unusual circumstances. The first release of this exemplary computer game not only fully satisfies a gamer's need for original visual assets, but also is novel in the way that it introduces most excellent music compositions of the grandest scale.
+“tasty red bean simulator” is a video game written entirely in Python3 and Pygame for the biannual game jam Pyweek (34). All the contents were finished within the last 4 days due to unusual circumstances. The first release of this exemplary computer game not only fully satisfies a gamer's need for original visual assets, but also is novel in the way that it introduces most excellent, original, music compositions of the grandest scale.
 
 This game is set on a red planet similar to the planet Mars of our solar system. On this scarlet planet, and having been recently exiled from your home planet, you work at a restaurant specializing in red bean desserts. As the planet is an arid place, though not without its own thriving ecosystem, these sweets are well-received among the locals. The locals are silvery creature with tempers so singular that caution must always be advised when around them, especially when an incorrect order or an ill-advised work attitude could result in instant death.
 
