@@ -1,7 +1,7 @@
 # tasty-red-bean-simulator
 made for pyweek 34 (red planet). made in 4 days because I started late. Includes original art and music compositons. The sound effects, fonts and photos used are in the credits text file.
 
-The first release of this exemplary computer game, that is not only fully satisfies a gamer's need for visual effects, but also is novel in that it includes most excellent music compositions of the grandest scale. The aforesaid game, named, "tasty red bean simulator", written in Python3 and Pygame, was created for the prestigious, biannual python game jam, Pyweek.
+The first release of this exemplary computer game, that is not only fully satisfies a gamer's need for visual effects, but also is novel in that it includes most excellent music compositions of the grandest scale. The aforesaid game, named, "tasty red bean simulator", written in entirely Python3 and Pygame, was created for the prestigious, biannual python game jam, Pyweek for the 34th iteration.
 If there are any issues, please do not hesitate to comment on the latest diary entry of the Pyweek entry page.
 
 ## Description
