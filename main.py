@@ -1091,7 +1091,6 @@ if won_game ==True:
 
 		clock.tick(30)
 		pygame.display.flip()
-print('out of loop')
 true_end_done=False
 endText = Text(screen,"Tasty Red Bean Simulator",(1280/2,720-720/5-720/20),100,False)
 endTextGroup = pygame.sprite.Group()
