@@ -12,14 +12,12 @@ The locals are silvery creature with tempers so singular that caution must alway
 *the silv’ry creatures exit with a smile.*\
 \
 *Go behind the counter swiftly my friend,*\
-*to the kitchen where you will meet the end.*\
+*to the kitchen where you will meet the end.*
 
 
 The first release of this exemplary computer game, that not only fully satisfies a gamer's need for original visual assets, but also is novel in the way that it introduces most excellent music compositions of the grandest scale. The previously mentioned game, "tasty red bean simulator", written in entirely Python3 and Pygame, was created for the prestigious, biannual python game jam, Pyweek for the 34th iteration.
 
-If there are any issues, please do not hesitate to comment on the latest diary entry of the Pyweek entry page.
-
-I give my sincere gratitude to anyone who took the chance to play this game.
+If there are any issues, please do not hesitate to comment on the latest diary entry of the Pyweek entry page. I give my sincere gratitude to anyone who took the chance to play this game.
 
 ## Requirements
 Python3 and Pygame (I used Python 3.8.8 and Pygame 2.1.2).
